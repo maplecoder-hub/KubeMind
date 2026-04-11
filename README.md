@@ -671,7 +671,7 @@ Check out our [Roadmap](ROADMAP.md) to see what's coming next.
 - [x] Natural language interface (CLI)
 - [x] Basic fault detection
 
-### v0.2.0 (Q2 2025) - Core Features
+### v0.2.0 (Q2 2026) - Core Features
 - [ ] Reinforcement learning scheduler
 - [ ] Deep learning prediction models
 - [ ] Multi-objective optimization
@@ -679,7 +679,7 @@ Check out our [Roadmap](ROADMAP.md) to see what's coming next.
 - [ ] Web dashboard
 - [ ] Multi-cluster basic support
 
-### v0.3.0 (Q3 2025) - Advanced AI
+### v0.3.0 (Q3 2026) - Advanced AI
 - [ ] Advanced RL algorithms (PPO, A3C)
 - [ ] Transformer-based prediction
 - [ ] Graph neural networks
@@ -687,7 +687,7 @@ Check out our [Roadmap](ROADMAP.md) to see what's coming next.
 - [ ] Advanced security governance
 - [ ] Predictive fault healing
 
-### v1.0.0 (Q4 2025) - Production Ready
+### v1.0.0 (Q4 2026) - Production Ready
 - [ ] Complete agent suite
 - [ ] Production-grade performance
 - [ ] Enterprise security features
