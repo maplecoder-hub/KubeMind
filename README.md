@@ -2,46 +2,72 @@
 
 <div align="center">
 
-**The AI-Powered Brain for Kubernetes Clusters**
+**Intent-Driven Autonomous Operations for Kubernetes**
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python Version](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python)](https://www.python.org/)
 [![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go)](https://golang.org/)
 [![Kubernetes Version](https://img.shields.io/badge/Kubernetes-1.28+-326CE5?logo=kubernetes)](https://kubernetes.io/)
 
-[Documentation](./docs/) | [Quick Start](#quick-start) | [API Reference](./docs/API.md) | [RFC Documents](./docs/rfc/)
+[Documentation](./docs/) | [Vision](./docs/VISION.md) | [RFC Documents](./docs/rfc/) | [Roadmap](./ROADMAP.md)
 
 </div>
 
 ---
 
-## 🎯 Overview
+## 🎯 Vision: Intent-Driven Autonomous Operations
 
-**KubeMind** is an intelligent Kubernetes governance system powered by AI agents and Large Language Models (LLMs). Unlike traditional K8S management tools that focus on application deployment, KubeMind acts as the **"brain"** for your Kubernetes clusters, autonomously managing cluster deployment, orchestration, and scheduling decisions.
+**KubeMind** redefines cloud-native operations in the Agentic AI era. Developers define system specifications, scale, and behaviors using natural language during development. The system autonomously handles deployment, monitoring, and dynamic tuning to maintain target state—achieving fully unmanned intelligent operations after intent definition.
+
+```
+Traditional Operations:
+  Dev → Code → Ops → Deploy → Monitor → Manual Tune → Manual Fix → Manual Scale...
+  (Continuous human intervention required)
+
+KubeMind Intent-Driven Operations:
+  Dev → Intent Definition → Autonomous Deploy → Autonomous Ops → Self-Heal → Self-Tune → Self-Maintain
+       ↓                     ↓                    ↓               ↓           ↓            ↓
+  [What system should be]  [Deploy blueprint]   [Monitor intent] [Fix drift] [Meet target] [Forever]
+  
+  Human intervention ONLY when intent changes
+```
 
 ### 🌟 Key Differentiators
 
-| Feature | Traditional Tools | KubeMind |
-|---------|------------------|----------|
-| **Management Scope** | Application-level | Cluster-level governance |
-| **Decision Making** | Rule-based automation | AI-driven autonomous decisions |
-| **Resource Management** | Pod resource optimization | Global cluster resource orchestration |
-| **Scheduling** | Application scheduling | Intelligent cluster scheduling policies |
-| **Fault Handling** | Application restart | Cluster component self-healing |
-| **Upgrade Management** | Application rollouts | K8S version upgrades |
-| **Security** | Application security | Cluster security compliance |
-| **Interaction** | YAML/CLI | Natural language + Declarative |
+| Dimension | Traditional DevOps | KubeMind Intent-Driven |
+|-----------|--------------------|------------------------|
+| **Interaction** | Manual commands, YAML | Natural language intent |
+| **Decision Authority** | Human-driven | Autonomous AI governance |
+| **Deployment** | Manual rollout | Intent-to-blueprint automatic |
+| **Monitoring** | Metrics dashboard | Intent achievement tracking |
+| **Fault Handling** | Manual diagnosis/fix | Autonomous self-healing |
+| **Scaling** | Manual/Policy-based | Intent-driven auto-tuning |
+| **Human Role** | Continuous operator | Intent definer only |
+| **Operations Cost** | High (SRE team) | Low (AI autonomous) |
 
 ### 🚀 Core Capabilities
 
-- **🏗️ Intelligent Cluster Planning** - Analyze requirements and design optimal cluster architectures
-- **⚙️ Smart Scheduling Governance** - AI-driven scheduling policies with multi-objective optimization
-- **📊 Resource Orchestration** - Dynamic quota management and capacity planning
-- **🌐 Network & Storage Governance** - CNI optimization, intelligent storage class selection
-- **🔒 Security & Compliance** - Automated RBAC generation, policy enforcement, vulnerability scanning
-- **🔧 Fault Self-Healing** - Predictive fault detection and automatic recovery
-- **🌍 Multi-Cluster Orchestration** - Unified multi-cluster management and disaster recovery
-- **💬 Natural Language Interface** - Conversational cluster management with LLM understanding
+#### Intent Definition
+- 🗣️ **Natural Language Intent** - "Deploy HA cluster: 3 masters, 5-20 workers, P99<50ms, 99.99% availability, $8000/month budget"
+- 📋 **System Intent Declaration (SID)** - Structured intent schema: specification, behavior, constraint, deployment
+- 🔍 **Intent Understanding Pipeline** - Classification, entity extraction, conflict detection, feasibility validation
+
+#### Intent Translation
+- 🏗️ **Universal Intent Translator (UIT)** - SID → System Blueprint (architecture, behavior, policy, deployment)
+- 📚 **Knowledge Injection** - Industry experience, operations best practices, domain knowledge injection
+- ☁️ **Multi-Environment Translation** - Same intent → AWS, GCP, Azure, On-Premise, Edge realization
+
+#### Autonomous Governance
+- 🔄 **Continuous Governance Loop** - Observe → Compare → Detect → Analyze → Decide → Execute → Verify → Learn
+- 📊 **Intent Comparator** - Real-time comparison of current state vs intent targets
+- 🚨 **Drift Detector** - Detect and predict intent drift with severity classification
+- 🤖 **Action Orchestrator** - Autonomous action planning with safety validation
+
+#### Intent Achievement
+- ✅ **Blueprint Executor** - Execute deployment phases: Infrastructure → Control Plane → Workers → Components → Policies
+- 🏥 **Self-Healer** - Maintain intent state through autonomous healing
+- 🎛️ **Auto-Tuner** - Adjust system to meet intent targets (latency, throughput, availability)
+- 📈 **Achievement Tracker** - Track intent achievement: specification_match, behavior_match, constraint_match
 
 ---
 
@@ -49,58 +75,66 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│     Layer 1: Human-Machine Interface (Python/FastAPI)        │
+│  Layer 1: Intent Interface Layer (Human-Machine Interface)   │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │ Natural Lang │  │ Governance   │  │ Observability│      │
-│  │ Interface    │  │ Policy Decl. │  │ Dashboard    │      │
+│  │ Intent       │  │ Blueprint    │  │ Operations   │      │
+│  │ Declaration  │  │ Visualization│  │ Dashboard    │      │
+│  │ (NLI)        │  │              │  │              │      │
 │  └──────────────┘  └──────────────┘  └──────────────┘      │
+│  Intent Input → Understanding → Validation → Confirmation   │
 └─────────────────────────────────────────────────────────────┘
-                               ↓ gRPC/REST
+                               ↓ Intent Translation
 ┌─────────────────────────────────────────────────────────────┐
-│     Layer 2: Agent Orchestration Brain (Python/LangChain)    │
+│  Layer 2: Intent Translation & Governance Brain              │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │              Agent Coordinator (LangGraph)             │  │
-│  └──────────────────────────────────────────────────────┘  │
-│  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌──────────┐ │
-│  │Cluster     │ │Scheduler   │ │Resource    │ │Network   │ │
-│  │Planner     │ │Governor    │ │Governor    │ │Governor  │ │
-│  │Agent       │ │Agent       │ │Agent       │ │Agent     │ │
-│  └────────────┘ └────────────┘ └────────────┘ └──────────┘ │
-│  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌──────────┐ │
-│  │Storage     │ │Security    │ │Fault       │ │Multi     │ │
-│  │Governor    │ │Governor    │ │Healer      │ │Cluster   │ │
-│  │Agent       │ │Agent       │ │Agent       │ │Agent     │ │
-│  └────────────┘ └────────────┘ └────────────┘ └──────────┘ │
-└─────────────────────────────────────────────────────────────┘
-                               ↓
-┌─────────────────────────────────────────────────────────────┐
-│     Layer 3: K8S Knowledge Base (Python/LlamaIndex)          │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │         K8S Best Practices Knowledge (RAG/ChromaDB)  │  │
+│  │              Intent Translation Engine                │  │
+│  │  Intent Parser → Blueprint Generator → Policy Creator│  │
 │  └──────────────────────────────────────────────────────┘  │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │         Cluster State Knowledge Graph (Neo4j)         │  │
-│  └──────────────────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │         Historical Decision Database (PostgreSQL)     │  │
+│  │              Autonomous Governance Brain                │  │
+│  │  ┌──────────────┐  ┌──────────────┐                │  │
+│  │  │ Intent       │  │ Drift        │                │  │
+│  │  │ Comparator   │  │ Detector     │                │  │
+│  │  └──────────────┘  └──────────────┘                │  │
+│  │  ┌──────────────┐  ┌──────────────┐                │  │
+│  │  │ Action       │  │ Achievement  │                │  │
+│  │  │ Orchestrator │  │ Tracker      │                │  │
+│  │  └──────────────┘  └──────────────┘                │  │
 │  └──────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
-                               ↓
+                               ↓ Blueprint Execution
 ┌─────────────────────────────────────────────────────────────┐
-│     Layer 4: Execution & Observation (Go/controller-runtime) │
+│  Layer 3: Knowledge Base Layer (Intent + Injected + State)   │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │ K8S          │  │ Prometheus   │  │ Event        │      │
-│  │ Controller   │  │ Collector    │  │ Processor    │      │
+│  │ Intent       │  │ Injected     │  │ System State │      │
+│  │ Knowledge    │  │ Knowledge    │  │ Graph        │      │
+│  │ (RAG)        │  │ (Industry/   │  │ (Neo4j)      │      │
+│  │              │  │ Ops/Domain)  │  │              │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
+│  ┌──────────────┐  ┌──────────────┐                        │
+│  │ Decision     │  │ Achievement  │                        │
+│  │ History      │  │ History      │                        │
+│  └──────────────┘  └──────────────┘                        │
+└─────────────────────────────────────────────────────────────┘
+                               ↓ Autonomous Execution
+┌─────────────────────────────────────────────────────────────┐
+│  Layer 4: Execution & Observation Layer                      │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │ Autonomous   │  │ Behavior     │  │ Intent       │      │
+│  │ Deployer     │  │ Monitor      │  │ Achiever     │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │ Self-Healer  │  │ Auto-Tuner   │  │ Predictor    │      │
 │  └──────────────┘  └──────────────┘  └──────────────┘      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### Technology Stack
 
-| Layer | Language | Framework | Database |
-|-------|----------|-----------|----------|
-| **Layer 1** | Python 3.11+ | FastAPI, React | - |
-| **Layer 2** | Python 3.11+ | LangChain, LangGraph | Redis/Kafka |
+| Layer | Language | Framework | Storage |
+|-------|----------|-----------|---------|
+| **Layer 1** | Python 3.11+ | FastAPI, LangChain | - |
+| **Layer 2** | Python 3.11+ | LangGraph, LangChain | Redis |
 | **Layer 3** | Python 3.11+ | LlamaIndex | ChromaDB, Neo4j, PostgreSQL |
 | **Layer 4** | Go 1.22+ | controller-runtime | Prometheus |
 
@@ -112,24 +146,73 @@ See [TECH-STACK.md](./docs/TECH-STACK.md) for definitive specifications.
 
 ```
 kubemind/
-├── cmd/kubemind/          # Go CLI entrypoint
+├── cmd/kubemind/              # Go CLI entrypoint
 ├── pkg/
-│   ├── controller/        # Go: K8s controller
-│   ├── events/            # Go: Event processor
-│   ├── safety/            # Go: Safety validator
-│   ├── gateway/           # Go: API gateway
-│   ├── agents/            # Python: Agent system
-│   ├── knowledge/         # Python: Knowledge base
-│   ├── nli/               # Python: Natural language interface
-│   ├── dashboard/         # Python: Dashboard backend
-│   └── models/            # Python: ML models
-├── api/crd/               # CRD definitions
-├── web/                   # Frontend (React)
-├── helm/kubemind/         # Helm chart
-├── docs/rfc/              # RFC documents
-├── knowledge/             # Knowledge base documents
-└── tests/                 # Tests
+│   ├── controller/            # Go: Intent/B Blueprint CRD controllers
+│   ├── executor/              # Go: Blueprint executor
+│   ├── healer/                # Go: Self-healing engine
+│   ├── tuner/                 # Go: Auto-tuning engine
+│   ├── gateway/               # Go: API gateway
+│   ├── intent/                # Python: Intent understanding
+│   ├── translator/            # Python: Intent translation
+│   ├── governance/            # Python: Autonomous governance
+│   ├── knowledge/             # Python: Knowledge base
+│   ├── injection/             # Python: Knowledge injection
+│   ├── dashboard/             # Python: Dashboard backend
+│   └── models/                # Python: ML models
+├── api/crd/                   # CRD: SystemIntentDeclaration, SystemBlueprint
+├── web/                       # Frontend (React)
+├── helm/kubemind/             # Helm chart
+├── docs/rfc/                  # RFC documents
+├── knowledge/                 # Knowledge base documents
+└── tests/                     # Tests
 ```
+
+---
+
+## 🗺️ Roadmap
+
+### v0.1.0 (Current) - Design Phase
+
+- [x] VISION.md - Intent-driven vision defined
+- [x] RFC-000 - Intent-driven architecture design
+- [x] RFC-001 - Intent Understanding Pipeline
+- [x] RFC-005 - System Intent Declaration (SID) Schema
+- [x] RFC-006 - Knowledge Injection Interface (KII)
+- [x] RFC-007 - Universal Intent Translator (UIT)
+- [x] RFC-002/003/004 - Layer 2-4 intent-driven updates
+- [ ] Project scaffolding
+- [ ] Go CRD definitions (SID, Blueprint)
+
+### v0.2.0 (Q3 2026) - Intent Interface & Translation MVP
+
+- [ ] Intent CLI/API Server
+- [ ] Intent Understanding Pipeline
+- [ ] Universal Intent Translator
+- [ ] Knowledge Injection API
+- [ ] SID & Blueprint CRDs
+- [ ] Basic knowledge retrieval
+
+### v0.3.0 (Q4 2026) - Autonomous Governance Core
+
+- [ ] Intent Comparator
+- [ ] Drift Detector
+- [ ] Action Orchestrator
+- [ ] Blueprint Executor
+- [ ] Self-Healer
+- [ ] Auto-Tuner
+- [ ] Achievement Tracker
+
+### v1.0.0 (2026) - Intent-Driven Autonomous Operations
+
+- [ ] Intent → Autonomous Ops end-to-end
+- [ ] > 95% intent achievement rate
+- [ ] > 95% self-resolution rate
+- [ ] < 5 human interventions/month
+- [ ] Knowledge marketplace
+- [ ] Multi-environment support
+
+See [ROADMAP.md](./ROADMAP.md) for detailed milestones.
 
 ---
 
@@ -141,22 +224,28 @@ kubemind/
 - Python 3.11+
 - Go 1.22+
 - kubectl configured
-- OpenAI API key or local LLM
+- LLM API (OpenAI / Anthropic / Local)
 
-### Installation
-
-#### Option 1: Using Helm
+### Intent Declaration Example
 
 ```bash
-helm repo add kubemind https://charts.kubemind.ai
-helm install kubemind kubemind/kubemind \
-  --namespace kubemind-system \
-  --create-namespace \
-  --set llm.provider=openai \
-  --set llm.apiKey=YOUR_API_KEY
+# Declare intent via CLI
+kubemind intent declare "Deploy HA cluster for financial trading:
+  - 3 masters, 5-20 workers with auto-scaling
+  - P99 latency < 50ms, throughput > 50k QPS
+  - 99.99% availability, MTTR < 2min
+  - Budget $8000/month
+  - CIS and SOX compliant
+  - Deploy on AWS multi-AZ"
+
+# View generated blueprint
+kubemind intent blueprint fin-trading-001
+
+# Check intent achievement
+kubemind intent status fin-trading-001
 ```
 
-#### Option 2: From Source
+### Installation
 
 ```bash
 git clone https://github.com/kubemind/kubemind.git
@@ -165,7 +254,7 @@ cd kubemind
 # Python setup
 pip install -r requirements.txt
 
-# Go setup  
+# Go setup
 go mod download
 
 # Build
@@ -177,54 +266,18 @@ make run
 
 ---
 
-## 🗺️ Roadmap
-
-### v0.1.0 (Current) - Design Phase
-
-- [x] RFC architecture documents
-- [x] Technology stack decisions
-- [ ] Project scaffolding
-- [ ] CRD definitions
-- [ ] Basic CLI tool
-
-### v0.2.0 (Q3 2026) - MVP
-
-- [ ] Agent Coordinator implementation
-- [ ] Cluster Planner Agent
-- [ ] Resource Governor Agent  
-- [ ] Natural Language Interface (CLI)
-- [ ] Knowledge Base (RAG + Neo4j)
-- [ ] K8s Controller (Go)
-
-### v0.3.0 (Q4 2026) - Core Features
-
-- [ ] Scheduler Governor Agent (RL-based)
-- [ ] Fault Healer Agent
-- [ ] Security Governor Agent
-- [ ] Multi-Cluster Agent
-- [ ] Web Dashboard
-- [ ] All specialized agents
-
-### v1.0.0 (2026) - Production Ready
-
-- [ ] Production-grade performance
-- [ ] Enterprise security features
-- [ ] Complete documentation
-- [ ] SLA guarantees
-- [ ] Commercial support
-
-See [ROADMAP.md](./ROADMAP.md) for detailed milestones.
-
----
-
 ## 📚 Documentation
 
 | Document | Description |
 |----------|-------------|
-| [TECH-STACK.md](./docs/TECH-STACK.md) | Definitive technology stack |
-| [RFC Documents](./docs/rfc/) | Architecture design documents |
-| [API Reference](./docs/API.md) | API specification |
-| [CONTRIBUTING.md](./CONTRIBUTING.md) | Contribution guidelines |
+| [VISION.md](./docs/VISION.md) | Intent-driven autonomous operations vision |
+| [TECH-STACK.md](./docs/TECH-STACK.md) | Definitive technology stack with locked versions |
+| [RFC-000](./docs/rfc/RFC-000-kubemind-architecture.md) | Intent-driven architecture overview |
+| [RFC-005](./docs/rfc/RFC-005-system-intent-declaration.md) | System Intent Declaration schema |
+| [RFC-006](./docs/rfc/RFC-006-knowledge-injection-interface.md) | Knowledge Injection interface |
+| [RFC-007](./docs/rfc/RFC-007-universal-intent-translator.md) | Intent Translator engine |
+| [RFC Index](./docs/rfc/README.md) | All RFC documents index |
+| [ROADMAP.md](./ROADMAP.md) | Development roadmap |
 
 ---
 
@@ -245,6 +298,7 @@ KubeMind is licensed under the Apache License 2.0. See [LICENSE](./LICENSE) for 
 
 - [Kubernetes](https://kubernetes.io/)
 - [LangChain](https://langchain.com/)
+- [LangGraph](https://langchain-ai.github.io/langgraph/)
 - [LlamaIndex](https://llamaindex.ai/)
 - [Neo4j](https://neo4j.com/)
 - [controller-runtime](https://github.com/kubernetes-sigs/controller-runtime)
@@ -253,6 +307,8 @@ KubeMind is licensed under the Apache License 2.0. See [LICENSE](./LICENSE) for 
 
 <div align="center">
 
-**Built with ❤️ by the KubeMind Community**
+**Intent-Driven Autonomous Operations - Zero Human Intervention After Intent Definition**
+
+Built with ❤️ by the KubeMind Community
 
 </div>
