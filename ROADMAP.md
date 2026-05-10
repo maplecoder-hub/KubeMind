@@ -4,10 +4,10 @@
 
 | Version | Status | Target Date | Description |
 |---------|--------|-------------|-------------|
-| v0.1.0 | Design Phase | 2026-04 | Architecture and design documents |
-| v0.2.0 | Development | Q3 2026 | MVP implementation |
-| v0.3.0 | Development | Q4 2026 | Core feature completion |
-| v1.0.0 | Release | 2026 | Production-ready release |
+| v0.1.0 | Design Phase | 2026-04 | Intent-driven architecture design |
+| v0.2.0 | Development | Q3 2026 | Intent Interface & Translation MVP |
+| v0.3.0 | Development | Q4 2026 | Autonomous Governance Core |
+| v1.0.0 | Release | 2026 | Intent-driven autonomous operations |
 
 ---
 
@@ -17,106 +17,117 @@
 
 | Task | Status | Owner | Notes |
 |------|--------|-------|-------|
-| RFC Architecture Documents | ✅ Done | Team | 21 RFC documents created |
-| Technology Stack Decision | ✅ Done | Team | TECH-STACK.md finalized |
+| VISION.md v2.0 | ✅ Done | Team | Intent-driven vision defined |
+| RFC-000 Architecture | ✅ Done | Team | Intent-driven architecture redesign |
+| RFC-001 Intent Interface | ✅ Done | Team | Intent Understanding Pipeline |
+| RFC-005 SID Schema | ✅ Done | Team | System Intent Declaration |
+| RFC-006 Knowledge Injection | ✅ Done | Team | Knowledge Injection Interface |
+| RFC-007 Intent Translator | ✅ Done | Team | Universal Intent Translator |
+| RFC Index Update | ✅ Done | Team | README.md updated |
+| Layer 2-4 RFCs | ⏳ Pending | Team | Need intent-driven updates |
+| CRD Type Definitions | ⏳ Pending | Team | Go struct definitions for SID/Blueprint |
 | Project Directory Structure | ⏳ Pending | Team | Defined in TECH-STACK.md |
-| CRD Type Definitions | ⏳ Pending | Team | Need Go struct definitions |
-| .gitignore, Makefile | ⏳ Pending | Team | Basic project setup |
-| LICENSE (Apache 2.0) | ⏳ Pending | Team | Legal foundation |
-| CONTRIBUTING.md | ⏳ Pending | Team | Contribution guidelines |
 
 ### Exit Criteria
 
-- All RFC documents reviewed and approved
-- Technology stack locked with exact versions
-- Project scaffolding complete
-- CI/CD pipeline configured
+- [ ] All RFC documents reflect intent-driven architecture
+- [ ] System Intent Declaration (SID) schema finalized
+- [ ] Universal Intent Translator (UIT) design complete
+- [ ] Knowledge Injection Interface (KII) design complete
+- [ ] Project scaffolding complete
+- [ ] Go CRD definitions for SID and Blueprint
 
 ---
 
-## v0.2.0 - MVP Implementation
+## v0.2.0 - Intent Interface & Translation MVP
 
 ### Status: Planned
 
-#### Core Components
+#### Intent Declaration Components
 
 | Component | Language | Framework | Priority | Status |
 |-----------|----------|-----------|----------|--------|
-| CLI Tool | Go | cobra | P0 | ⬜ Not Started |
-| K8s Controller | Go | controller-runtime | P0 | ⬜ Not Started |
-| Agent Coordinator | Python | LangGraph | P0 | ⬜ Not Started |
-| Knowledge Base - RAG | Python | LlamaIndex | P0 | ⬜ Not Started |
-| Knowledge Base - Graph | Python | Neo4j driver | P0 | ⬜ Not Started |
-| Natural Language Interface | Python | LangChain | P1 | ⬜ Not Started |
+| Intent CLI | Go | cobra | P0 | ⬜ Not Started |
+| Intent API Server | Python | FastAPI | P0 | ⬜ Not Started |
+| Intent Understanding Pipeline | Python | LangChain | P0 | ⬜ Not Started |
+| SID Validation Engine | Python | Pydantic | P0 | ⬜ Not Started |
+| Universal Intent Translator | Python | LangChain | P0 | ⬜ Not Started |
+| Blueprint Generator | Python | LangGraph | P0 | ⬜ Not Started |
 
-#### Specialized Agents (Minimum Set)
+#### Knowledge Injection Components
 
-| Agent | Purpose | Priority | Status |
-|-------|---------|----------|--------|
-| Cluster Planner Agent | Architecture design | P0 | ⬜ Not Started |
-| Resource Governor Agent | Quota/capacity | P0 | ⬜ Not Started |
-| Scheduler Governor Agent | Basic scheduling | P1 | ⬜ Not Started |
-| Fault Healer Agent | Basic detection | P2 | ⬜ Not Started |
+| Component | Language | Framework | Priority | Status |
+|-----------|----------|-----------|----------|--------|
+| Knowledge Injection API | Python | FastAPI | P0 | ⬜ Not Started |
+| Knowledge Validation Engine | Python | Pydantic | P0 | ⬜ Not Started |
+| Knowledge Indexer | Python | LlamaIndex | P0 | ⬜ Not Started |
+| Knowledge Vector Store | Python | ChromaDB | P1 | ⬜ Not Started |
+| Knowledge Graph Store | Python | Neo4j driver | P1 | ⬜ Not Started |
 
-#### CRDs
+#### CRDs (Intent-Driven)
 
 | CRD | Purpose | Status |
 |-----|---------|--------|
-| ClusterGovernancePolicy | Main governance policy | ⬜ Not Started |
-| SchedulingPolicy | Scheduling rules | ⬜ Not Started |
-| FaultHandlingPolicy | Fault handling config | ⬜ Not Started |
+| SystemIntentDeclaration (SID) | Intent declaration CRD | ⬜ Not Started |
+| SystemBlueprint | Generated blueprint CRD | ⬜ Not Started |
+| KnowledgeInjection | Knowledge injection CRD | ⬜ Not Started |
+| IntentAchievement | Achievement tracking CRD | ⬜ Not Started |
 
 ### Exit Criteria
 
-- All P0 components functional
-- Basic natural language interface works
-- Knowledge base retrieval functional
-- Can manage a single cluster
-- Integration tests passing
+- [ ] Intent declaration via CLI/API works
+- [ ] Natural language intent → SID conversion works
+- [ ] SID → Blueprint translation works
+- [ ] Knowledge injection API functional
+- [ ] Basic knowledge retrieval works
+- [ ] Intent validation engine operational
+- [ ] Integration tests passing
 
 ---
 
-## v0.3.0 - Core Features
+## v0.3.0 - Autonomous Governance Core
 
 ### Status: Planned
 
-#### Advanced Agents
+#### Autonomous Governance Components
 
-| Agent | Features | Priority | Status |
-|-------|----------|----------|--------|
-| Scheduler Governor | RL-based (PPO), multi-objective | P0 | ⬜ Not Started |
-| Security Governor | RBAC generation, compliance audit | P0 | ⬜ Not Started |
-| Network Governor | Network policies, CNI config | P1 | ⬜ Not Started |
-| Storage Governor | Storage class management | P1 | ⬜ Not Started |
-| Multi-Cluster Agent | Federation, migration | P1 | ⬜ Not Started |
+| Component | Language | Framework | Priority | Status |
+|-----------|----------|-----------|----------|--------|
+| Intent Comparator | Python | LangChain | P0 | ⬜ Not Started |
+| Drift Detector | Python | LangChain | P0 | ⬜ Not Started |
+| Action Orchestrator | Python | LangGraph | P0 | ⬜ Not Started |
+| Blueprint Executor | Go | controller-runtime | P0 | ⬜ Not Started |
+| Intent Achiever | Go | controller-runtime | P0 | ⬜ Not Started |
 
-#### ML Models
+#### Specialized Governor Agents
 
-| Model | Purpose | Framework | Status |
-|-------|---------|-----------|--------|
-| PPO Scheduler | RL scheduling optimization | stable-baselines3 | ⬜ Not Started |
-| Prophet Capacity | Capacity prediction | prophet | ⬜ Not Started |
-| LSTM Fault | Fault prediction | torch | ⬜ Not Started |
+| Agent | Purpose | Priority | Status |
+|-------|---------|----------|--------|
+| Intent-to-Deployment Agent | Deploy from blueprint | P0 | ⬜ Not Started |
+| Intent-to-Behavior Agent | Apply behavior policies | P0 | ⬜ Not Started |
+| Self-Healing Agent | Maintain intent state | P0 | ⬜ Not Started |
+| Auto-Tuning Agent | Adjust to meet intent | P1 | ⬜ Not Started |
 
-#### Dashboard
+#### Monitoring & Observation
 
-| Component | Technology | Status |
-|-----------|------------|--------|
-| Dashboard Backend | FastAPI | ⬜ Not Started |
-| Dashboard Frontend | React + Ant Design | ⬜ Not Started |
-| WebSocket Streaming | websockets | ⬜ Not Started |
+| Component | Purpose | Status |
+|-----------|---------|--------|
+| Intent Achievement Monitor | Track intent metrics | ⬜ Not Started |
+| Autonomous Action Logger | Log all autonomous actions | ⬜ Not Started |
+| Intent Drift Alerting | Alert on intent drift | ⬜ Not Started |
 
 ### Exit Criteria
 
-- All specialized agents functional
-- ML models trained and integrated
-- Web dashboard operational
-- Multi-cluster basic support
-- Production-like testing complete
+- [ ] Autonomous deployment from intent works
+- [ ] Intent achievement monitoring functional
+- [ ] Drift detection and self-healing works
+- [ ] Auto-tuning to meet intent targets works
+- [ ] Intent modification → blueprint update flow works
+- [ ] Production-like testing complete
 
 ---
 
-## v1.0.0 - Production Release
+## v1.0.0 - Intent-Driven Autonomous Operations
 
 ### Status: Planned
 
@@ -124,29 +135,40 @@
 
 | Requirement | Description | Status |
 |-------------|-------------|--------|
-| Performance | Meet RFC targets | ⬜ Not Started |
-| Security | Enterprise security features | ⬜ Not Started |
-| Documentation | Complete docs | ⬜ Not Started |
-| SLA Guarantees | Defined SLAs | ⬜ Not Started |
-| Support | Commercial support | ⬜ Not Started |
+| Intent Understanding | < 5s for natural language intent | ⬜ Not Started |
+| Blueprint Generation | < 30s from SID | ⬜ Not Started |
+| Autonomous Deploy | < 30min from intent | ⬜ Not Started |
+| Intent Achievement | > 95% intent targets met | ⬜ Not Started |
+| Self-Resolution | > 95% issues auto resolved | ⬜ Not Started |
+| Human Intervention | < 5/month per cluster | ⬜ Not Started |
 
 #### Enterprise Features
 
 | Feature | Description | Status |
 |---------|-------------|--------|
-| Multi-tenancy | Full isolation | ⬜ Not Started |
-| Audit logging | Complete audit trail | ⬜ Not Started |
-| Advanced RBAC | Fine-grained permissions | ⬜ Not Started |
-| Compliance | CIS, NIST full support | ⬜ Not Started |
-| Disaster recovery | Full DR capabilities | ⬜ Not Started |
+| Multi-Intent Management | Multiple intents per cluster | ⬜ Not Started |
+| Intent Conflict Resolution | Detect and resolve intent conflicts | ⬜ Not Started |
+| Intent History & Audit | Full intent lifecycle tracking | ⬜ Not Started |
+| Knowledge Marketplace | Share and import knowledge | ⬜ Not Started |
+| Intent Templates | Pre-defined intent templates | ⬜ Not Started |
+
+#### Deployment Modes
+
+| Mode | Provider | Status |
+|------|----------|--------|
+| Cloud | AWS, GCP, Azure | ⬜ Not Started |
+| On-Premise | VMware, Bare Metal | ⬜ Not Started |
+| Hybrid | Cloud + On-Prem | ⬜ Not Started |
+| Edge | Edge + Cloud | ⬜ Not Started |
 
 ### Exit Criteria
 
-- All RFC requirements met
-- Performance benchmarks achieved
-- Security audit complete
-- Documentation comprehensive
-- Enterprise pilots successful
+- [ ] Intent declaration → autonomous operations end-to-end
+- [ ] All RFC performance targets achieved
+- [ ] Security audit complete
+- [ ] Knowledge injection marketplace functional
+- [ ] Enterprise pilots successful
+- [ ] Zero human intervention after intent definition (except intent changes)
 
 ---
 
@@ -154,22 +176,26 @@
 
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
-| LLM API dependency | High | High | Local LLM support (Ollama) |
-| RL training complexity | Medium | High | Start with heuristics, migrate to RL |
-| Multi-agent coordination | Medium | Medium | Clear conflict resolution rules |
-| K8s API changes | Low | Medium | Use stable API versions |
+| LLM Intent Understanding Accuracy | Medium | High | Multiple validation layers, human confirmation |
+| Blueprint Translation Complexity | Medium | High | Incremental translation, provider-specific templates |
+| Intent Drift Detection Accuracy | Medium | High | Multiple detection methods, knowledge-driven |
+| Autonomous Action Safety | High | Critical | Approval gates, rollback capabilities, simulation |
+| Knowledge Quality | Medium | Medium | Knowledge validation, peer review, versioning |
 
 ---
 
 ## Milestone Dependencies
 
 ```
-v0.1.0 Design ──┬──→ v0.2.0 MVP ──┬──→ v0.3.0 Core ──→ v1.0.0 Prod
-                 │                  │
-                 │                  └──→ ML Models
+v0.1.0 Design ──┬──→ v0.2.0 Intent MVP ──┬──→ v0.3.0 Governance ──→ v1.0.0 Autonomous
+                 │                        │
+                 │                        ├──→ Intent Comparator
+                 │                        ├──→ Drift Detector
+                 │                        └──→ Self-Healing
                  │
-                 └──→ Project Scaffolding
-                 └──→ CRD Definitions
+                 ├──→ SID Schema
+                 ├──→ Knowledge Injection
+                 └──→ Intent Translator
 ```
 
 ---
@@ -178,4 +204,5 @@ v0.1.0 Design ──┬──→ v0.2.0 MVP ──┬──→ v0.3.0 Core ─�
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.0.0 | 2026-04-26 | KubeMind Team | Intent-driven roadmap redesign |
 | 1.0.0 | 2026-04-22 | KubeMind Team | Initial roadmap definition |

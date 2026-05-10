@@ -1,314 +1,397 @@
-# RFC-000: KubeMind Overall Architecture Design
+# RFC-000: KubeMind Intent-Driven Architecture Design
 
 ## Abstract
 
-This document defines the overall architecture design of KubeMind, an AI-powered intelligent Kubernetes cluster governance system. KubeMind adopts a four-layer architecture, where AI agents work collaboratively to achieve cluster-level autonomous decision-making and governance.
+KubeMind redefines cloud-native platform operations in the Agentic AI era. It enables developers to define system specifications, scale, and behaviors using natural language during development. The system autonomously handles deployment, monitoring, and dynamic tuning to maintain target state—achieving fully unmanned intelligent operations after intent definition.
+
+## Core Vision
+
+**Intent-Driven Autonomous Operations**
+
+```
+Traditional: Dev → Code → Ops → Deploy → Monitor → Manual Tune
+
+KubeMind:    Dev → Intent → Autonomous Deploy → Autonomous Ops → Self-Heal
+                    ↓              ↓                ↓
+            Behavior Def    Target Deploy     Target Maintain
+```
+
+---
 
 ## Detailed Design
 
 ### Architecture Overview
 
-KubeMind adopts a four-layer architecture design:
+KubeMind adopts a four-layer architecture implementing intent-driven operations:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│     Layer 1: Human-Machine Interface Layer                   │
+│  Layer 1: Intent Interface Layer (Human-Machine Interface)   │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │ Natural Lang │  │ Governance   │  │ Observability│      │
-│  │ Interface    │  │ Policy Decl. │  │ Dashboard    │      │
+│  │ Intent       │  │ Blueprint    │  │ Operations   │      │
+│  │ Declaration  │  │ Visualization│  │ Dashboard    │      │
+│  │ (NLI)        │  │              │  │              │      │
 │  └──────────────┘  └──────────────┘  └──────────────┘      │
+│  Intent Input → Understanding → Validation → Confirmation   │
 └─────────────────────────────────────────────────────────────┘
-                               ↓
+                               ↓ Intent Translation
 ┌─────────────────────────────────────────────────────────────┐
-│     Layer 2: Agent Orchestration Brain Layer                 │
+│  Layer 2: Intent Translation & Governance Brain              │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │              Agent Coordinator (LangChain)              │  │
-│  └──────────────────────────────────────────────────────┘  │
-│  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌──────────┐ │
-│  │Cluster     │ │Scheduler   │ │Resource    │ │Network   │ │
-│  │Planner     │ │Governor    │ │Governor    │ │Governor  │ │
-│  │Agent       │ │Agent       │ │Agent       │ │Agent     │ │
-│  └────────────┘ └────────────┘ └────────────┘ └──────────┘ │
-│  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌──────────┐ │
-│  │Storage     │ │Security    │ │Fault       │ │Multi     │ │
-│  │Governor    │ │Governor    │ │Healer      │ │Cluster   │ │
-│  │Agent       │ │Agent       │ │Agent       │ │Agent     │ │
-│  └────────────┘ └────────────┘ └────────────┘ └──────────┘ │
-└─────────────────────────────────────────────────────────────┘
-                               ↓
-┌─────────────────────────────────────────────────────────────┐
-│     Layer 3: K8S Knowledge Base Layer                        │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │         K8S Best Practices Knowledge (RAG)           │  │
+│  │              Intent Understanding Engine                │  │
+│  │  Intent Parser → Blueprint Generator → Policy Creator  │  │
 │  └──────────────────────────────────────────────────────┘  │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │         Cluster State Knowledge Graph                  │  │
-│  └──────────────────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │         Historical Decision Database                  │  │
+│  │              Autonomous Governance Brain                │  │
+│  │  ┌──────────────┐  ┌──────────────┐                │  │
+│  │  │ Intent       │  │ Drift        │                │  │
+│  │  │ Comparator   │  │ Detector     │                │  │
+│  │  └──────────────┘  └──────────────┘                │  │
+│  │  ┌──────────────┐  ┌──────────────┐                │  │
+│  │  │ Action       │  │ Knowledge    │                │  │
+│  │  │ Orchestrator │  │ Integrator   │                │  │
+│  │  └──────────────┘  └──────────────┘                │  │
 │  └──────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
-                               ↓
+                               ↓ Blueprint Execution
 ┌─────────────────────────────────────────────────────────────┐
-│     Layer 4: Execution & Observation Layer                  │
+│  Layer 3: K8S Knowledge Base Layer                          │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │ K8S API      │  │ Prometheus   │  │ Kubernetes   │      │
-│  │ Server       │  │ + Grafana    │  │ Events       │      │
+│  │ Intent       │  │ K8S Best     │  │ Injected     │      │
+│  │ Knowledge    │  │ Practices    │  │ External     │      │
+│  │ (RAG)        │  │ (RAG)        │  │ Knowledge    │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
+│  ┌──────────────┐  ┌──────────────┐                        │
+│  │ System       │  │ Decision     │                        │
+│  │ State Graph  │  │ History      │                        │
+│  └──────────────┘  └──────────────┘                        │
+└─────────────────────────────────────────────────────────────┘
+                               ↓ Autonomous Execution
+┌─────────────────────────────────────────────────────────────┐
+│  Layer 4: Execution & Observation Layer                      │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │ Autonomous   │  │ Behavior     │  │ Intent       │      │
+│  │ Deployer     │  │ Monitor      │  │ Achiever     │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │ Self-Healer  │  │ Auto-Tuner   │  │ Predictor    │      │
 │  └──────────────┘  └──────────────┘  └──────────────┘      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Layer 1: Human-Machine Interface Layer
+---
 
-**Responsibility**: Provides multiple human-machine interaction methods, allowing users to interact with KubeMind in a natural and intuitive way.
+### Layer 1: Intent Interface Layer
 
-**Core Components**:
+**Responsibility**: Natural language intent input, understanding, and validation.
 
-1. **Natural Language Interface**
-   - LLM-based natural language understanding
-   - Intent recognition and entity extraction
-   - Multi-turn conversation management
-   - Command generation and execution
+**Core Concepts**:
 
-2. **Governance Policy Declaration**
-   - Declarative policy definition
-   - Policy validation and conflict detection
-   - Policy version management
-   - Automatic policy generation
+#### 1.1 System Intent Declaration (SID)
 
-3. **Observability Dashboard**
-   - Real-time cluster state visualization
-   - AI decision process display
-   - Governance effect monitoring
-   - Anomaly alerts and notifications
+SID is the core data model that translates natural language intent into a structured format. It captures four categories of intent.
 
-**Detailed Design**: See [RFC-001](./RFC-001-human-machine-interface.md)
+| Intent Category | Description | Examples |
+|-----------------|-------------|----------|
+| **Specification Intent** | What the system should be | Architecture type, scale, components, topology |
+| **Behavior Intent** | How the system should behave | Performance targets, availability goals, elasticity rules |
+| **Constraint Intent** | Boundaries and limits | Cost budget, security level, compliance frameworks |
+| **Deployment Intent** | Where and how to deploy | Cloud provider, region, deployment mode |
 
-### Layer 2: Agent Orchestration Brain Layer
+**SID Data Model Specification**:
 
-**Responsibility**: Coordinates multiple AI Agents for intelligent decision-making and autonomous governance.
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| intent_id | string | 1-64 chars, alphanumeric + hyphens | Unique identifier |
+| natural_language | string | ≥10 chars | Original natural language intent |
+| specification | object | Required | Specification intent object |
+| behavior | object | Required | Behavior intent object |
+| constraints | object | Optional | Constraint intent object |
+| deployment | object | Required | Deployment intent object |
+| status | enum | pending, validating, blueprinting, deploying, achieving, achieved, failed | Intent lifecycle status |
 
-**Core Components**:
+#### 1.2 Intent Understanding Pipeline
 
-1. **Agent Coordinator**
-   - Agent registration and discovery
-   - Task distribution and coordination
-   - Conflict detection and resolution
-   - Global objective optimization
+The pipeline processes natural language intent through five stages:
 
-2. **Specialized Agents**
-   - **Cluster Planner Agent**: Intelligent cluster planning and architecture design
-   - **Scheduler Governor Agent**: Intelligent scheduling policy governance
-   - **Resource Governor Agent**: Resource orchestration and capacity planning
-   - **Network Governor Agent**: Network policy and CNI governance
-   - **Storage Governor Agent**: Storage policy and storage class management
-   - **Security Governor Agent**: Security policy and compliance governance
-   - **Fault Healer Agent**: Fault detection and self-healing
-   - **Multi-Cluster Agent**: Multi-cluster orchestration and management
+| Stage | Function | Input | Output |
+|-------|----------|-------|--------|
+| 1. Intent Classification | Categorize intent into types | Natural language | Intent categories with confidence |
+| 2. Entity Extraction | Extract specific values | Classified intent | Extracted entities (architecture, scale, etc.) |
+| 3. Conflict Detection | Detect intent conflicts | All intent parts | Conflict report with suggestions |
+| 4. Feasibility Validation | Validate intent feasibility | Full intent | Validation result with recommendations |
+| 5. Structured Intent Output | Generate structured SID | All processed data | SystemIntentDeclaration object |
 
-**Detailed Design**: See [RFC-002](./RFC-002-agent-orchestration-brain.md)
+#### 1.3 Intent Categories
 
-### Layer 3: K8S Knowledge Base Layer
+| Category | Keywords | Typical Values |
+|----------|----------|----------------|
+| **Specification** | deploy, create, build, setup, cluster, architecture, HA, multi-region | HA, standalone, edge-cloud, multi-region |
+| **Behavior** | latency, throughput, performance, availability, uptime, MTTR, scale, auto-scale | P99<50ms, 99.99% uptime, 5-20 workers |
+| **Constraint** | budget, cost, limit, compliance, security, regulation, SLA | $8000/month, CIS compliance, high security |
+| **Deployment** | AWS, GCP, Azure, on-prem, cloud, hybrid, edge, region | AWS us-east-1, multi-AZ |
 
-**Responsibility**: Stores and manages Kubernetes-related knowledge, providing decision-making basis for AI Agents.
+---
 
-**Core Components**:
+### Layer 2: Intent Translation & Governance Brain
 
-1. **K8S Best Practices Knowledge (RAG)**
-   - Vectorized K8S best practices documents
-   - Semantic similarity retrieval
-   - Context-enhanced answer generation
-   - Continuous learning and updates
+**Responsibility**: Translate intent to blueprint, autonomous governance.
 
-2. **Cluster State Knowledge Graph**
-   - Resource relationship graph
-   - Dependency analysis
-   - Impact scope assessment
-   - State change tracking
+#### 2.1 Intent Translation Engine
 
-3. **Historical Decision Database**
-   - Decision record storage
-   - Decision effect evaluation
-   - Decision pattern learning
-   - Decision rollback support
+The translation engine converts SID to System Blueprint through a multi-stage pipeline.
 
-**Detailed Design**: See [RFC-003](./RFC-003-knowledge-base.md)
+**Translation Pipeline Stages**:
+
+| Stage | Description | Output |
+|-------|-------------|--------|
+| Intent Analysis | Parse intent, identify dependencies, calculate complexity | Intent analysis report |
+| Knowledge Retrieval | Query intent knowledge, K8S practices, injected knowledge | Knowledge context |
+| Blueprint Generation | Generate architecture, behavior, policy, deployment blueprints | System Blueprint |
+| Policy Derivation | Derive scaling, healing, security, cost policies | Policy Blueprint |
+| Deployment Planning | Calculate sequence, estimate resources/cost, generate rollback plan | Deployment Plan |
+| Validation | Validate consistency, feasibility, cost, compliance, performance | Validation result |
+
+#### 2.2 System Blueprint Structure
+
+| Blueprint Type | Generated From | Contains |
+|----------------|----------------|----------|
+| **Architecture Blueprint** | Specification Intent | Topology, components, networking, storage |
+| **Behavior Blueprint** | Behavior Intent | Performance policies, availability config, elasticity rules |
+| **Policy Blueprint** | Constraint Intent | Cost policies, security policies, compliance controls |
+| **Deployment Blueprint** | Deployment Intent | Infrastructure, automation, deployment sequence |
+| **Monitoring Blueprint** | Behavior Intent | Metrics collection, alerts, logging, dashboards |
+
+#### 2.3 Autonomous Governance Loop
+
+The governance loop runs continuously to maintain intent state.
+
+| Phase | Frequency | Actions |
+|-------|-----------|---------|
+| **Observe** | 10s | Collect cluster state, behavior metrics, achievement metrics |
+| **Compare** | 10s | Compare current state vs intent targets, calculate deviation |
+| **Detect** | 10s | Analyze drift trends, detect behavior drift, predict future drift |
+| **Analyze** | 10s | Query knowledge for solutions, analyze root cause, rank solutions |
+| **Decide** | 10s | Select solution, validate safety, check approval, generate plan |
+| **Execute** | Event-driven | Execute action sequence, monitor progress, handle errors |
+| **Verify** | Post-execution | Measure intent improvement, verify no negative impact |
+| **Learn** | Post-execution | Record outcome, update knowledge metrics, feedback to knowledge base |
+
+---
+
+### Layer 3: Knowledge Base Layer
+
+**Responsibility**: Intent knowledge, injected external knowledge, system state.
+
+#### 3.1 Knowledge Types
+
+| Knowledge Type | Source | Storage | Purpose |
+|---------------|--------|---------|---------|
+| **Intent Knowledge** | Intent patterns, blueprint templates, behavior models | Vector Store (ChromaDB/Weaviate) | Intent understanding and translation |
+| **Injected Knowledge** | Industry experience, operations practices, domain knowledge, custom policies | Vector Store + Knowledge Graph | Enhance autonomous decisions |
+| **System State Graph** | Real-time cluster state, intent achievement | Neo4j Graph | State tracking and relationship mapping |
+| **Decision History** | Historical autonomous decisions, outcomes, feedback | PostgreSQL/TimescaleDB | Learning and pattern matching |
+
+#### 3.2 Knowledge Injection Interface
+
+External knowledge can be injected into the system through a standardized interface.
+
+**Injection Types**:
+
+| Type | Description | Example |
+|------|-------------|---------|
+| Industry Experience | Domain-specific patterns and best practices | Financial services HA patterns |
+| Operations Experience | Operational best practices | Cost optimization strategies |
+| Domain Knowledge | Technical domain expertise | Database optimization, network tuning |
+| Custom Policies | Organization-specific rules | Security policies, compliance controls |
+
+**Knowledge Injection Data Model**:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| injection_id | string | Unique identifier |
+| knowledge_type | enum | industry_experience, operations_experience, domain_knowledge, custom_policy |
+| domain | enum | financial_services, ecommerce, iot, enterprise, general |
+| content | object | Knowledge content with scenarios, patterns, rules |
+| applicability | object | Where knowledge applies (deployment modes, scale range) |
+| provenance | object | Source, validation status, peer review |
+
+---
 
 ### Layer 4: Execution & Observation Layer
 
-**Responsibility**: Executes AI Agent decisions and collects cluster state data for observation.
+**Responsibility**: Autonomous deployment, behavior monitoring, intent achievement.
 
-**Core Components**:
+#### 4.1 Autonomous Deployment
 
-1. **K8S API Server Integration**
-   - Kubernetes API client
-   - CRD extension management
-   - Webhook configuration
-   - RBAC permission management
+Deployment executes the blueprint in phases with verification at each step.
 
-2. **Monitoring System Integration (Prometheus + Grafana)**
-   - Metric collection and storage
-   - Custom metric export
-   - Alert rule configuration
-   - Visualization dashboards
+**Deployment Phases**:
 
-3. **Event Stream Processing**
-   - Kubernetes event subscription
-   - Event filtering and aggregation
-   - Anomaly event detection
-   - Event correlation analysis
+| Phase | Steps | Verification |
+|-------|-------|--------------|
+| 1. Infrastructure | Create network, storage | VPC exists, storage classes ready |
+| 2. Control Plane | Deploy etcd, API server, controller managers | Control plane healthy, HA achieved |
+| 3. Workers | Provision nodes, join cluster | All nodes ready, count matches intent |
+| 4. Components | Deploy CNI, monitoring, ingress | All addons healthy |
+| 5. Policies | Apply network policies, quotas, security policies | All policies enforced |
+| 6. Behaviors | Configure scaling, healing, resilience rules | Behavior policies active |
 
-**Detailed Design**: See [RFC-004](./RFC-004-execution-observation.md)
+#### 4.2 Intent Achievement Monitoring
 
-### Data Flow Design
+The system continuously monitors intent achievement across all categories.
 
-#### User Request Processing Flow
+| Intent Category | Metrics | Target | Alert Threshold |
+|-----------------|---------|--------|-----------------|
+| Specification | Architecture match, scale match, component health | 100% match | Any deviation |
+| Behavior | Latency P99, throughput, availability, MTTR | Intent targets | Deviation > 10% |
+| Constraint | Cost, compliance score, security posture | Within budget | Violation detected |
+| Deployment | Provider match, region match, mode match | 100% match | Any mismatch |
+
+#### 4.3 Autonomous Tuning
+
+When intent drift is detected, autonomous tuning adjusts the system.
+
+| Trigger | Condition | Action |
+|---------|-----------|--------|
+| Behavior Drift | Metric deviation > threshold | Analyze and adjust parameters |
+| Intent Change | New intent declared | Re-blueprint and apply changes |
+| Predictive | Prediction confidence > 80% | Proactive adjustment |
+| Constraint Violation | Budget/compliance breached | Cost optimization or policy adjustment |
+
+---
+
+### Deployment Mode Support
+
+The same intent can be translated to different environments.
+
+| Deployment Mode | Provider | Control Plane | Workers | Monitoring |
+|-----------------|----------|---------------|---------|------------|
+| **Cloud - AWS** | AWS | EKS multi-AZ | EC2 Auto Scaling Group | CloudWatch + Prometheus |
+| **Cloud - GCP** | GCP | GKE Regional | GKE Autopilot | Cloud Monitoring |
+| **Cloud - Azure** | Azure | AKS with AZ | AKS Node Pool | Azure Monitor |
+| **On-Premise** | Private | 3 physical servers | VMware/KVM nodes | Prometheus + Grafana |
+| **Edge** | Edge + Cloud | 1 central + 2 edge | Distributed edge nodes | Edge-specific collectors |
+
+---
+
+### Data Flow: Intent to Autonomous Operations
 
 ```
-User Input (Natural Language/Policy Declaration)
-    ↓
-[Layer 1] Natural Language Understanding / Policy Parsing
-    ↓
-[Layer 2] Agent Coordinator receives request
-    ↓
-[Layer 2] Identify relevant Agents and distribute tasks
-    ↓
-[Layer 3] Agents query knowledge base for context
-    ↓
-[Layer 2] Agents perform reasoning and decision-making
-    ↓
-[Layer 4] Execute decisions (call K8S API)
-    ↓
-[Layer 4] Collect execution results and monitoring data
-    ↓
-[Layer 3] Update knowledge graph and historical database
-    ↓
-[Layer 1] Feedback results to user
+Intent Definition (Development Stage)
+    │
+    ↓ Natural Language Intent
+┌─────────────────────────────────┐
+│ Layer 1: Intent Understanding   │
+│ • Parse intent                  │
+│ • Validate feasibility          │
+│ • Generate structured intent    │
+└─────────────────────────────────┘
+    │
+    ↓ System Intent Declaration (SID)
+┌─────────────────────────────────┐
+│ Layer 2: Intent Translation     │
+│ • Generate blueprint            │
+│ • Derive policies               │
+│ • Create deployment plan        │
+└─────────────────────────────────┘
+    │
+    ↓ System Blueprint
+┌─────────────────────────────────┐
+│ Layer 3: Knowledge Integration │
+│ • Query intent knowledge        │
+│ • Apply injected knowledge      │
+│ • Generate state graph          │
+└─────────────────────────────────┘
+    │
+    ↓ Knowledge-Enhanced Blueprint
+┌─────────────────────────────────┐
+│ Layer 4: Autonomous Execution   │
+│ • Deploy infrastructure         │
+│ • Apply behaviors               │
+│ • Start intent monitoring       │
+└─────────────────────────────────┘
+    │
+    ↓ Running System
+┌─────────────────────────────────┐
+│ Autonomous Governance (Forever) │
+│ Loop:                           │
+│   Observe → Compare → Analyze   │
+│   Decide → Execute → Learn      │
+│                                 │
+│ Goal: Maintain intent state     │
+│ Human: Only intent changes      │
+└─────────────────────────────────┘
 ```
 
-#### Autonomous Governance Flow
+---
+
+### Intent Example: Financial Trading HA Cluster
+
+**Natural Language Intent**:
 
 ```
-[Layer 4] Monitoring system detects anomaly/periodic trigger
-    ↓
-[Layer 4] Event stream processing and filtering
-    ↓
-[Layer 3] Update cluster state knowledge graph
-    ↓
-[Layer 2] Relevant Agents are triggered
-    ↓
-[Layer 3] Agents query knowledge base and historical decisions
-    ↓
-[Layer 2] Agents perform reasoning and decision-making
-    ↓
-[Layer 4] Execute decisions (may require human confirmation)
-    ↓
-[Layer 4] Monitor execution effects
-    ↓
-[Layer 3] Record decisions and effects to historical database
-    ↓
-[Layer 1] Optional: Notify user
+Deploy a production-grade HA cluster for financial trading system:
+ - 3 masters, 5-20 workers with auto-scaling
+ - P99 latency < 50ms, throughput > 50k QPS
+ - 99.99% availability, MTTR < 2min
+ - Budget $8000/month
+ - CIS and SOX compliant
+ - Deploy on AWS multi-AZ
 ```
 
-### Performance Metrics
+**Structured Intent (SID)**:
 
-KubeMind's target performance metrics:
+| Category | Specification |
+|----------|---------------|
+| **Specification** | Architecture: HA, Scale: 3 masters + 5-20 workers, Components: K8s, Prometheus, Istio |
+| **Behavior** | Latency P99: 50ms, Throughput: 50k QPS, Availability: 99.99%, MTTR: 2min |
+| **Constraint** | Budget: $8000/month, Compliance: CIS-Kubernetes, SOX |
+| **Deployment** | Mode: Cloud, Provider: AWS, Region: us-east-1, Multi-AZ: 3 zones |
 
-| Metric | Baseline | Target | Improvement |
-|--------|----------|--------|-------------|
-| Cluster CPU Utilization | 20-30% | 60-80% | 2-3x |
-| Cluster Memory Utilization | 25-35% | 65-85% | 2-2.5x |
-| Scheduling Latency | 100-500ms | 10-50ms | 5-10x |
-| Fault Detection Time | 5-10 min | 30s-2min | 3-10x |
-| MTTR | 30+ min | 5 min | 6x |
-| Resource Prediction Accuracy | N/A | 85-95% | - |
-| Fault Prediction Accuracy | N/A | 80-90% | - |
-| SLA Compliance Rate | 80-85% | 95-99% | 10-15% |
-| Cost Savings | 0% | 30-50% | - |
+**Generated Blueprint**:
 
-### Deployment Architecture
+| Blueprint Type | Content |
+|----------------|---------|
+| Architecture | EKS Regional (3 AZs), EC2 Auto Scaling (5-20 nodes) |
+| Behavior | CPU > 70% → scale, Pod crash → restart, Latency monitoring |
+| Policy | Encryption at-rest + in-transit, RBAC auto-generation, Audit logging |
+| Deployment | VPC → EKS → Node Groups → Addons → Policies |
 
-KubeMind supports the following deployment modes:
+**Intent Achievement Result**:
 
-#### 1. In-Cluster Deployment
+| Metric | Target | Actual | Achievement |
+|--------|--------|--------|-------------|
+| Latency P99 | 50ms | 42ms | 84% (achieved) |
+| Availability | 99.99% | 99.97% | 99.98% (near) |
+| Cost | $8000 | $7200 | 90% (within) |
+| Compliance | CIS + SOX | Validated | 100% (achieved) |
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: kubemind-controller
-  namespace: kubemind-system
-spec:
-  replicas: 3
-  template:
-    spec:
-      containers:
-      - name: coordinator
-        image: kubemind/coordinator:latest
-      - name: agent-worker
-        image: kubemind/agent-worker:latest
-```
+---
 
-#### 2. Out-of-Cluster Deployment
+### Performance Targets
 
-```bash
-kubemind start --kubeconfig ~/.kube/config --mode external
-```
+| Metric | Target | Description |
+|--------|--------|-------------|
+| Intent Understanding | < 5s | Parse natural language intent |
+| Blueprint Generation | < 30s | Generate complete blueprint |
+| Autonomous Deploy | < 30min | Deploy from intent |
+| Intent Achievement | > 95% | Meet intent targets |
+| Self-Resolution | > 95% | Auto resolve issues |
+| Human Intervention | < 5/month | Minimal human needed |
+| Knowledge Utilization | > 80% | Use injected knowledge |
 
-#### 3. Hybrid Deployment
-
-- Layer 2 (Agent Orchestration) deployed outside cluster
-- Layer 3 (Knowledge Base) deployed inside cluster
-- Layer 4 (Execution & Observation) deployed inside cluster
-
-### Security Considerations
-
-1. **RBAC Permission Control**
-   - Principle of least privilege
-   - Fine-grained permission management
-   - Regular permission audits
-
-2. **Data Security**
-   - Sensitive data encrypted at rest
-   - Transport layer encryption (TLS)
-   - Secure API key management
-
-3. **Audit Logs**
-   - Record all decisions and operations
-   - Tamper-proof audit logs
-   - Regular audit analysis
-
-4. **Decision Approval**
-   - High-risk operations require human confirmation
-   - Configurable approval policies
-   - Approval workflow support
-
-### Extensibility Design
-
-1. **Horizontal Scaling**
-   - Stateless Agent design
-   - Multi-replica deployment support
-   - Load balancing
-
-2. **Plugin Architecture**
-   - Pluggable Agents
-   - Pluggable knowledge sources
-   - Pluggable executors
-
-3. **Multi-Tenancy Support**
-   - Namespace isolation
-   - Quota management
-   - Policy isolation
+---
 
 ## References
 
-- [Kubernetes Documentation](https://kubernetes.io/docs/)
-- [LangChain Documentation](https://python.langchain.com/docs/)
-- [RAG Paper: Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401)
-- [Agent Paper: Foundation Models for Decision Making](https://arxiv.org/abs/2310.08991)
+- [Intent-Driven Operations Paper](https://arxiv.org/)
+- [Knowledge Injection Framework](https://github.com/)
 
 ## Change History
 
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
+| 2.1.0 | 2026-04-26 | KubeMind Team | Convert code to specification design |
+| 2.0.0 | 2026-04-26 | KubeMind Team | Intent-driven architecture redesign |
 | 0.1 | 2026-04-21 | KubeMind Team | Initial version |

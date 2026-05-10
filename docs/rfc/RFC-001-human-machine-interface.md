@@ -2,7 +2,7 @@
 
 ## Abstract
 
-This document defines the design of the Human-Machine Interface Layer (Layer 1) of KubeMind, which provides multiple interaction methods including natural language interface, governance policy declaration, and observability dashboard.
+This document defines the design of the Human-Machine Interface Layer (Layer 1) of KubeMind, which serves as the primary entry point for intent-driven autonomous operations. The layer provides natural language intent declaration, understanding, validation, and visualization of intent achievement.
 
 ## Detailed Design
 
@@ -13,376 +13,440 @@ This document defines the design of the Human-Machine Interface Layer (Layer 1) 
 │              Human-Machine Interface Layer                   │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │                 Interface Adapters                   │   │
+│  │            Intent Declaration Interface              │   │
 │  │  ┌──────────┐  ┌──────────┐  ┌──────────┐          │   │
 │  │  │   CLI    │  │  Web UI  │  │ REST API │          │   │
 │  │  └──────────┘  └──────────┘  └──────────┘          │   │
 │  └─────────────────────────────────────────────────────┘   │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │          Natural Language Interface (NLI)            │   │
+│  │          Intent Understanding Pipeline               │   │
 │  │  ┌──────────────┐  ┌──────────────┐                │   │
 │  │  │ Intent       │  │ Entity       │                │   │
-│  │  │ Recognition  │  │ Extraction   │                │   │
+│  │  │ Classification│ │ Extraction   │                │   │
 │  │  └──────────────┘  └──────────────┘                │   │
 │  │  ┌──────────────┐  ┌──────────────┐                │   │
-│  │  │ Context      │  │ Response     │                │   │
-│  │  │ Management   │  │ Generation   │                │   │
-│  │  └──────────────┘  └──────────────┘                │   │
-│  └─────────────────────────────────────────────────────┘   │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │        Governance Policy Declaration (GPD)           │   │
-│  │  ┌──────────────┐  ┌──────────────┐                │   │
-│  │  │ Policy       │  │ Validation   │                │   │
-│  │  │ Parser       │  │ Engine       │                │   │
-│  │  └──────────────┘  └──────────────┘                │   │
-│  │  ┌──────────────┐  ┌──────────────┐                │   │
-│  │  │ Conflict     │  │ Policy       │                │   │
-│  │  │ Detector     │  │ Generator    │                │   │
+│  │  │ Conflict     │  │ Feasibility  │                │   │
+│  │  │ Detection    │  │ Validation   │                │   │
 │  │  └──────────────┘  └──────────────┘                │   │
 │  └─────────────────────────────────────────────────────┘   │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │          Observability Dashboard (OD)                │   │
+│  │          Intent Visualization Dashboard              │   │
 │  │  ┌──────────────┐  ┌──────────────┐                │   │
-│  │  │ Real-time    │  │ AI Decision  │                │   │
-│  │  │ Monitoring   │  │ Visualization│                │   │
+│  │  │ Blueprint    │  │ Intent       │                │   │
+│  │  │ Visualization│  │ Achievement  │                │   │
 │  │  └──────────────┘  └──────────────┘                │   │
 │  │  ┌──────────────┐  ┌──────────────┐                │   │
-│  │  │ Alert        │  │ Governance   │                │   │
-│  │  │ Management   │  │ Dashboard    │                │   │
+│  │  │ Autonomous   │  │ Governance   │                │   │
+│  │  │ Action Log   │  │ Metrics      │                │   │
 │  │  └──────────────┘  └──────────────┘                │   │
 │  └─────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Component Design
+---
 
-#### 1. Interface Adapters
+### Intent Declaration Interface
 
-Interface adapters provide multiple ways for users to interact with KubeMind.
+#### 1.1 CLI Interface
 
-**CLI (Command Line Interface)**
+**Function**: Provide command-line interface for intent declaration and management.
 
-```bash
-# Natural language query
-kubemind ask "How is my cluster performing?"
+**CLI Commands Specification**:
 
-# Direct command
-kubemind cluster analyze --namespace production
+| Command | Parameters | Function |
+|---------|------------|----------|
+| `kubemind intent declare` | `<natural-language>` | Declare new intent via natural language |
+| `kubemind intent apply` | `-f intent.yaml` | Apply structured intent from file |
+| `kubemind intent status` | `<intent-id>` | Check intent achievement status |
+| `kubemind intent achievements` | - | List all intent achievements |
+| `kubemind intent update` | `<intent-id> <new-intent>` | Update existing intent |
+| `kubemind intent blueprint` | `<intent-id>` | View generated blueprint |
+| `kubemind intent actions` | `<intent-id>` | View autonomous actions taken |
+| `kubemind chat` | - | Interactive intent declaration mode |
 
-# Interactive mode
-kubemind chat
+**Intent Declaration Flow**:
+
+```
+User Input → Intent Parsing → Validation → Blueprint Preview → Confirmation → Deployment
 ```
 
-**Web UI**
+#### 1.2 Web UI Interface
 
-Modern web-based dashboard with:
-- Natural language chat interface
-- Visual policy editor
-- Real-time monitoring dashboards
-- Decision audit logs
+**Function**: Provide web-based interface for intent visualization and management.
 
-**REST API**
+**Web UI Components**:
 
-RESTful API for programmatic access:
+| Component | Function | Features |
+|-----------|----------|----------|
+| Intent Input | Natural language intent input | Text input, intent templates, examples |
+| Blueprint Preview | Visualize generated blueprint | Architecture diagram, deployment timeline |
+| Achievement Dashboard | Monitor intent achievement | Real-time metrics, achievement percentage |
+| Action Audit Log | View autonomous actions | Action history, reasoning, outcomes |
+| Intent Comparison | Compare intent changes | Diff view, version history |
 
-```http
-POST /api/v1/query
-Content-Type: application/json
+#### 1.3 REST API Interface
 
-{
-  "query": "Optimize my cluster resources",
-  "context": {
-    "cluster": "production",
-    "namespace": "default"
-  }
-}
+**Function**: Provide programmatic access for intent management.
+
+**API Endpoints Specification**:
+
+| Endpoint | Method | Request | Response | Function |
+|----------|--------|---------|----------|----------|
+| `/api/v1/intents` | POST | Natural language intent | Intent ID, status | Declare new intent |
+| `/api/v1/intents` | GET | - | List of intents | List all intents |
+| `/api/v1/intents/{id}` | GET | - | Intent details | Get specific intent |
+| `/api/v1/intents/{id}` | PUT | Updated intent | Updated intent | Update intent |
+| `/api/v1/intents/{id}/achievement` | GET | - | Achievement metrics | Get achievement status |
+| `/api/v1/intents/{id}/actions` | GET | - | Action history | Get autonomous actions |
+| `/api/v1/intents/{id}/blueprint` | GET | - | Blueprint | Get generated blueprint |
+| `/api/v1/intents/{id}/validate` | POST | Intent | Validation result | Validate intent |
+
+---
+
+### Intent Understanding Pipeline
+
+#### 2.1 Intent Classification
+
+**Function**: Classify natural language intent into intent categories.
+
+**Classification Process**:
+
+| Step | Input | Process | Output |
+|------|-------|---------|--------|
+| 1 | Natural language text | Keyword matching, pattern recognition | Intent categories list |
+| 2 | Categories list | Confidence calculation | Primary category with confidence score |
+| 3 | Primary category | Sub-intent extraction | Sub-intents list |
+
+**Classification Rules**:
+
+| Intent Category | Keywords | Example Patterns |
+|-----------------|----------|------------------|
+| Specification | deploy, create, build, setup, cluster, architecture | "Deploy HA cluster with 3 masters" |
+| Behavior | latency, throughput, availability, uptime, scale | "P99 latency < 50ms, 99.99% uptime" |
+| Constraint | budget, cost, compliance, security, limit | "Budget $8000/month, CIS compliant" |
+| Deployment | AWS, GCP, Azure, cloud, on-prem, region | "Deploy on AWS multi-AZ" |
+
+**Classification Output**:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| categories | list | All identified intent categories |
+| primary_category | enum | Main intent category |
+| confidence | float (0-1) | Classification confidence score |
+| sub_intents | list | Extracted sub-intents |
+
+#### 2.2 Entity Extraction
+
+**Function**: Extract specific values from classified intent.
+
+**Entity Types and Extraction Rules**:
+
+| Entity Type | Field | Extraction Method | Example |
+|-------------|-------|-------------------|---------|
+| **Architecture** | architecture_type | Keyword matching | HA, standalone, multi-region |
+| **Scale** | control_plane_replicas | Number + "masters" | "3 masters" → 3 |
+| **Scale** | worker_replicas_min | "X-Y workers" → X | "5-20 workers" → min: 5, max: 20 |
+| **Performance** | latency_p99_ms | Number + "ms" + "P99" | "P99 < 50ms" → 50 |
+| **Availability** | uptime_percent | Number + "%" + "uptime/availability" | "99.99% availability" → 99.99 |
+| **Cost** | budget_monthly | Number + "$" + "month" | "$8000/month" → 8000 |
+| **Compliance** | frameworks | Keyword list | "CIS, SOX" → ["cis-kubernetes", "sox"] |
+| **Provider** | cloud_provider | Keyword matching | AWS, GCP, Azure |
+| **Region** | region | Region identifiers | "us-east-1" |
+
+**Entity Extraction Output**:
+
+| Category | Entities | Confidence |
+|----------|----------|------------|
+| Specification Entities | architecture_type, control_plane_replicas, worker_replicas_range, components | Per entity |
+| Behavior Entities | latency_p99, throughput, availability_percent, mttr_minutes, auto_scaling | Per entity |
+| Constraint Entities | cost_budget_monthly, security_level, compliance_frameworks | Per entity |
+| Deployment Entities | mode, provider, regions, availability_zones | Per entity |
+
+#### 2.3 Conflict Detection
+
+**Function**: Detect conflicts between intent parts.
+
+**Conflict Types**:
+
+| Conflict Type | Condition | Severity | Suggestion |
+|---------------|-----------|----------|------------|
+| Incompatible | Single region + multi-region architecture | Error | Specify multiple regions |
+| Incompatible | Low budget + high availability (>99.9%) | Warning | Budget may need increase |
+| Contradictory | min_replicas > max_replicas | Error | Adjust replica range |
+| Redundant | Duplicate compliance frameworks | Info | Use single framework name |
+
+**Conflict Detection Process**:
+
+| Step | Input | Process | Output |
+|------|-------|---------|--------|
+| 1 | All extracted entities | Apply conflict rules | Conflicts list |
+| 2 | Conflicts list | Calculate severity | Severity classification |
+| 3 | Conflicts + severity | Generate suggestions | Resolution options |
+
+**Conflict Detection Output**:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| has_conflicts | boolean | Whether conflicts exist |
+| conflicts | list | List of detected conflicts |
+| resolution_options | list | Possible resolutions per conflict |
+
+#### 2.4 Feasibility Validation
+
+**Function**: Validate intent feasibility against constraints and capabilities.
+
+**Validation Checks**:
+
+| Check Type | Condition | Pass Criteria | Failure Handling |
+|------------|-----------|---------------|------------------|
+| Resource | Required nodes <= max capacity | Nodes available | Suggest lower scale |
+| Budget | Estimated cost <= budget | Cost within budget | Suggest optimization |
+| Technical | Provider supports features | Features supported | Suggest alternative |
+| Compliance | Frameworks applicable | Frameworks match deployment | Suggest adjustments |
+| Performance | Latency achievable in region | Region supports latency | Suggest region change |
+
+**Feasibility Validation Output**:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| is_feasible | boolean | Overall feasibility status |
+| checks | list | Individual check results |
+| recommendations | list | Improvement suggestions |
+
+---
+
+### Intent Understanding Flow
+
+```
+Natural Language Intent
+         │
+         ↓
+┌─────────────────────────┐
+│ 1. Intent Classification │
+│    - Categorize intent   │
+│    - Identify primary    │
+│    - Extract sub-intents │
+└─────────────────────────┘
+         │
+         ↓
+┌─────────────────────────┐
+│ 2. Entity Extraction    │
+│    - Extract values     │
+│    - Map to schema      │
+│    - Calculate conf.    │
+└─────────────────────────┘
+         │
+         ↓
+┌─────────────────────────┐
+│ 3. Conflict Detection   │
+│    - Check rules        │
+│    - Identify conflicts │
+│    - Generate options   │
+└─────────────────────────┘
+         │
+         ↓
+┌─────────────────────────┐
+│ 4. Feasibility Check    │
+│    - Resource check     │
+│    - Budget estimation  │
+│    - Technical validate │
+└─────────────────────────┘
+         │
+         ↓
+┌─────────────────────────┐
+│ 5. Structured Intent    │
+│    Output (SID)         │
+└─────────────────────────┘
 ```
 
-#### 2. Natural Language Interface (NLI)
+---
 
-**Intent Recognition**
+### Intent Visualization Dashboard
 
-Uses LLM to identify user intent from natural language input.
+#### 4.1 Blueprint Visualization
 
-**Supported Intents**:
+**Function**: Visualize generated blueprint from intent.
 
-| Intent Category | Examples |
-|-----------------|----------|
-| Cluster Query | "How many nodes in my cluster?", "What's the cluster health?" |
-| Resource Management | "Scale deployment X to 5 replicas", "Optimize resource usage" |
-| Troubleshooting | "Why is pod X crashing?", "Diagnose high CPU usage" |
-| Security | "Check RBAC policies", "Scan for vulnerabilities" |
-| Capacity Planning | "Predict resource needs for next month" |
-| Multi-Cluster | "Migrate workloads to cluster B", "Compare clusters" |
+**Blueprint Visualization Elements**:
 
-**Entity Extraction**
+| Element | Description | Display |
+|---------|-------------|---------|
+| Architecture Diagram | Control plane + workers topology | Node diagram with connections |
+| Deployment Timeline | Phases and estimated duration | Timeline with milestones |
+| Resource Estimation | CPU, memory, storage, cost | Summary table |
+| Policy Overview | Security, compliance, cost policies | Policy cards |
 
-```python
-{
-    "intent": "scale_deployment",
-    "entities": {
-        "deployment": "nginx-deployment",
-        "namespace": "production",
-        "replicas": 5
-    },
-    "confidence": 0.95
-}
-```
-
-**Context Management**
-
-```python
-# Conversation example
-User: "How many pods are running in production?"
-System: "There are 42 pods running in the production namespace."
-
-User: "Scale the frontend to 10 replicas"
-System: "Scaling frontend deployment to 10 replicas in production namespace."
-# Context: namespace="production" from previous turn
-```
-
-#### 3. Governance Policy Declaration (GPD)
-
-**Policy DSL (Domain Specific Language)**
-
-```yaml
-apiVersion: kubemind.ai/v1alpha1
-kind: ClusterGovernancePolicy
-metadata:
-  name: production-policy
-spec:
-  # Scheduling governance
-  scheduling:
-    mode: intelligent
-    objectives:
-      - name: resource-utilization
-        weight: 0.4
-        target: 0.75
-      - name: performance
-        weight: 0.3
-      - name: cost-optimization
-        weight: 0.3
-    
-  # Resource governance
-  resources:
-    autoQuota: true
-    capacityPlanning: true
-    predictionHorizon: 30d
-    
-  # Security governance
-  security:
-    rbacGeneration: auto
-    complianceFrameworks:
-      - cis-kubernetes-benchmark
-      - nist-csf
-    
-  # Fault handling
-  faultHandling:
-    mode: predictive
-    autoHealing: true
-    mttrTarget: 5m
-    
-  # Approval workflow
-  approval:
-    highRisk:
-      - node-drain
-      - cluster-upgrade
-      - network-policy-change
-    notify:
-      - slack: "#ops-alerts"
-      - email: "ops@company.com"
-```
-
-**Policy Validation Engine**
-
-```yaml
-validation:
-  valid: false
-  errors:
-    - field: spec.scheduling.objectives[0].weight
-      message: "Total weight must equal 1.0, current total is 1.0"
-      severity: error
-  warnings:
-    - field: spec.faultHandling.mttrTarget
-      message: "MTTR target of 5m is aggressive, consider 10m"
-      severity: warning
-```
-
-**Conflict Detection**
-
-```yaml
-conflicts:
-  - policy1: production-policy
-    policy2: security-policy
-    field: spec.security.rbacGeneration
-    conflict: "production-policy sets 'auto', security-policy sets 'manual'"
-    resolution: "security-policy takes precedence"
-```
-
-#### 4. Observability Dashboard (OD)
-
-**Real-time Monitoring**
-
-- Cluster health metrics
-- Resource utilization trends
-- Pod/Node status
-- Network traffic
-- Storage usage
-
-**AI Decision Visualization**
+**Blueprint Preview Display**:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ Decision: Scale deployment frontend to 8 replicas       │
+│ Intent: fin-trading-001                                 │
+│ Status: ACHIEVING (87%)                                 │
 ├─────────────────────────────────────────────────────────┤
-│ Reasoning:                                              │
-│ 1. CPU utilization at 85% (threshold: 80%)             │
-│ 2. Traffic increased by 40% in last hour               │
-│ 3. Similar pattern detected 3 times in history          │
-│ 4. Recommended action: Scale out                        │
+│ Blueprint Preview:                                       │
 │                                                         │
-│ Agent: Resource Governor                                 │
-│ Confidence: 92%                                         │
-│                                                         │
-│ Evidence:                                               │
-│ - Prometheus metric: CPU usage                          │
-│ - Historical pattern: Traffic spike pattern             │
-│ - Knowledge base: Best practice for scaling             │
+│   [Master 1] ─── [Master 2] ─── [Master 3]             │
+│        │              │              │                  │
+│        └──────────────┼──────────────┘                  │
+│                       │                                 │
+│   [Control Plane (HA)]                                  │
+│                       │                                 │
+│   [Workers (5-20)] ─── [W1] [W2] [W3] [W4] [W5] ...    │
 └─────────────────────────────────────────────────────────┘
 ```
 
+#### 4.2 Intent Achievement Metrics
+
+**Function**: Display real-time intent achievement status.
+
+**Achievement Dashboard Elements**:
+
+| Intent Category | Metrics Display | Target vs Actual | Status |
+|-----------------|-----------------|------------------|--------|
+| Specification | Architecture match, scale match | Target: 100% | ✓ MATCHED |
+| Behavior | Latency P99, throughput, availability | Actual vs Target | ✓/◐ ACHIEVED/NEAR |
+| Constraint | Cost, compliance score | Budget vs Actual | ✓ WITHIN/⚠ EXCEEDED |
+| Deployment | Provider, region, mode | Config vs Deployed | ✓ MATCHED |
+
+**Achievement Dashboard Display**:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ Intent Achievement Dashboard                             │
+├─────────────────────────────────────────────────────────┤
+│ Specification Intent:                                    │
+│   Architecture: HA           ✓ MATCHED                  │
+│   Control Plane: 3/3         ✓ MATCHED                  │
+│   Workers: 5/5 (target 5-20) ✓ MATCHED                  │
+│                                                         │
+│ Behavior Intent:                                         │
+│   Latency P99:  42ms/50ms    ✓ ACHIEVED (84%)           │
+│   Throughput:   48k/50k QPS  ◐ NEAR (96%)              │
+│   Availability: 99.97%/99.99% ◐ NEAR (99.98%)          │
+│                                                         │
+│ Constraint Intent:                                       │
+│   Budget: $7,200/$8,000     ✓ WITHIN (90%)              │
+│   Compliance: CIS, SOX      ✓ VALIDATED                 │
+│                                                         │
+│ Overall Achievement: 87%                                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+#### 4.3 Autonomous Action Log
+
+**Function**: Log all autonomous actions taken for intent achievement.
+
+**Action Log Elements**:
+
+| Element | Description | Example |
+|---------|-------------|---------|
+| Timestamp | When action occurred | 2026-04-26 10:23:15 |
+| Action Type | Type of action | SCALE-OUT, HEALING, OPTIMIZATION |
+| Action Description | What was done | Scaled workers from 5 to 7 |
+| Reasoning | Why action was taken | CPU > 70%, traffic +35% |
+| Result | Outcome | CPU reduced to 58%, latency stable |
+
+**Action Log Display**:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ Autonomous Actions (Last 24h)                           │
+├─────────────────────────────────────────────────────────┤
+│ 2026-04-26 10:23:15 [SCALE-OUT]                         │
+│ Action: Scaled workers from 5 to 7                      │
+│ Reason: CPU > 70% threshold, traffic +35%              │
+│ Result: CPU reduced to 58%, latency stable             │
+│                                                         │
+│ 2026-04-26 09:45:30 [HEALING]                           │
+│ Action: Restarted pod nginx-abc-123                     │
+│ Reason: OOMKilled, memory limit too low                │
+│ Result: Pod running, increased memory limit             │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
 ### Data Models
 
-#### User Session
+#### Intent Declaration Model
 
-```python
-@dataclass
-class UserSession:
-    session_id: str
-    user_id: str
-    created_at: datetime
-    last_activity: datetime
-    context: Dict[str, Any]
-    conversation_history: List[ConversationTurn]
-    active_policies: List[str]
-    preferences: UserPreferences
-```
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| intent_id | string | 1-64 chars, unique | Intent identifier |
+| natural_language | string | ≥10 chars | Original intent text |
+| structured_intent | object | Required | Parsed intent structure |
+| classification | object | Required | Classification result |
+| entities | object | Required | Extracted entities |
+| status | enum | pending → achieved | Intent lifecycle status |
+| created_at | datetime | Auto-generated | Creation timestamp |
+| updated_at | datetime | Auto-updated | Last update timestamp |
+| owner | string | Required | Intent owner |
+| validation_result | object | Optional | Feasibility validation |
+| conflicts | object | Optional | Conflict detection result |
+| achievement | object | Optional | Achievement metrics |
 
-#### Conversation Turn
+#### Intent Achievement Model
 
-```python
-@dataclass
-class ConversationTurn:
-    turn_id: str
-    timestamp: datetime
-    user_input: str
-    intent: Intent
-    entities: Dict[str, Any]
-    system_response: str
-    actions_taken: List[Action]
-    feedback: Optional[Feedback]
-```
+| Field | Type | Description |
+|-------|------|-------------|
+| overall_percentage | float (0-100) | Overall achievement score |
+| specification_match | float (0-100) | Specification intent match |
+| behavior_match | float (0-100) | Behavior intent match |
+| constraint_match | float (0-100) | Constraint intent match |
+| deployment_match | float (0-100) | Deployment intent match |
+| last_updated | datetime | Last measurement time |
+| drift_detected | boolean | Whether drift exists |
+| autonomous_actions_count | integer | Actions taken for this intent |
 
-### Interface Design
+#### User Session Model
 
-#### CLI Commands
+| Field | Type | Description |
+|-------|------|-------------|
+| session_id | string | Session identifier |
+| user_id | string | User identifier |
+| created_at | datetime | Session creation time |
+| last_activity | datetime | Last activity time |
+| context | object | Session context data |
+| intent_history | list | List of intent IDs |
+| preferences | object | User preferences |
 
-```bash
-# Query commands
-kubemind ask "<natural language query>"
-kubemind cluster status
-kubemind cluster analyze [--namespace NAMESPACE]
-kubemind resource list [--type TYPE]
-kubemind resource optimize
+---
 
-# Policy commands
-kubemind policy create -f policy.yaml
-kubemind policy validate -f policy.yaml
-kubemind policy list
-kubemind policy generate "<description>"
-kubemind policy apply <policy-name>
+### API Request/Response Examples
 
-# Governance commands
-kubemind governance enable --mode autonomous
-kubemind governance status
-kubemind governance decisions [--limit N]
+#### Intent Declaration Request
 
-# Troubleshooting commands
-kubemind diagnose [--namespace NAMESPACE]
-kubemind explain <resource-type>/<resource-name>
-kubemind suggest [--context CONTEXT]
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| natural_language | string | Yes | Natural language intent |
+| metadata.owner | string | Yes | Intent owner |
+| metadata.environment | string | No | Target environment |
+| metadata.tags | list | No | Intent tags |
+| options.dry_run | boolean | No | Dry run mode |
+| options.auto_approve | boolean | No | Auto approve blueprint |
+| options.notification_channel | string | No | Notification channel |
 
-# Multi-cluster commands
-kubemind cluster add --name NAME --context CONTEXT
-kubemind cluster list
-kubemind multi-cluster status
-kubemind multi-cluster migrate --from CLUSTER1 --to CLUSTER2
-```
+#### Intent Declaration Response
 
-### API Specification
+| Field | Type | Description |
+|-------|------|-------------|
+| intent_id | string | Generated intent ID |
+| status | enum | Current intent status |
+| classification.categories | list | Identified categories |
+| classification.primary_category | enum | Main category |
+| classification.confidence | float | Classification confidence |
+| entities.specification_entities | object | Specification entities |
+| entities.behavior_entities | object | Behavior entities |
+| entities.constraint_entities | object | Constraint entities |
+| entities.deployment_entities | object | Deployment entities |
+| validation.is_feasible | boolean | Feasibility status |
+| validation.estimated_cost_monthly | float | Cost estimate |
+| validation.recommendations | list | Improvement suggestions |
+| created_at | datetime | Creation time |
 
-#### Query API
-
-```http
-POST /api/v1/query
-```
-
-Request:
-```json
-{
-  "query": "string",
-  "context": {
-    "cluster": "string",
-    "namespace": "string"
-  },
-  "options": {
-    "include_explanation": true,
-    "include_recommendations": true
-  }
-}
-```
-
-Response:
-```json
-{
-  "response": "string",
-  "intent": "string",
-  "entities": {},
-  "explanation": "string",
-  "recommendations": ["string"],
-  "actions": [
-    {
-      "type": "string",
-      "description": "string",
-      "dry_run": true
-    }
-  ]
-}
-```
-
-#### Policy API
-
-```http
-POST /api/v1/policies
-GET /api/v1/policies
-GET /api/v1/policies/{name}
-PUT /api/v1/policies/{name}
-DELETE /api/v1/policies/{name}
-POST /api/v1/policies/{name}/validate
-POST /api/v1/policies/{name}/apply
-```
-
-#### Decision API
-
-```http
-GET /api/v1/decisions
-GET /api/v1/decisions/{id}
-POST /api/v1/decisions/{id}/approve
-POST /api/v1/decisions/{id}/reject
-```
+---
 
 ## References
 
@@ -393,4 +457,6 @@ POST /api/v1/decisions/{id}/reject
 
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
+| 2.1.0 | 2026-04-26 | KubeMind Team | Convert code to specification design |
+| 2.0.0 | 2026-04-26 | KubeMind Team | Intent-driven architecture redesign |
 | 0.1 | 2026-04-21 | KubeMind Team | Initial version |

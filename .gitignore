@@ -140,3 +140,6 @@ tmp/
 # Documentation build
 docs/_build/
 site/
+
+# Insight analysis (internal research)
+Insight/

@@ -36,151 +36,99 @@ This document describes the design of the Scheduler Governor Agent, which handle
 
 ### Scheduling Objectives
 
-```yaml
-objectives:
-  resource_utilization:
-    description: "Maximize node resource utilization"
-    metrics:
-      - cpu_utilization
-      - memory_utilization
-    target: 0.75
-    
-  performance:
-    description: "Minimize latency"
-    metrics:
-      - pod_latency_p95
-    target: latency_p95 < 100ms
-    
-  cost_optimization:
-    description: "Minimize infrastructure cost"
-    metrics:
-      - cost_per_pod
-      - node_count
-    
-  availability:
-    description: "Maximize workload availability"
-    metrics:
-      - pod_restart_rate
-    target: availability > 0.999
-```
+| Objective | Description | Metrics | Target |
+|-----------|-------------|---------|--------|
+| resource_utilization | Maximize node resource utilization | cpu_utilization, memory_utilization | 0.75 |
+| performance | Minimize latency | pod_latency_p95 | latency_p95 < 100ms |
+| cost_optimization | Minimize infrastructure cost | cost_per_pod, node_count | N/A |
+| availability | Maximize workload availability | pod_restart_rate | availability > 0.999 |
 
 ### Reinforcement Learning Approach
 
-#### RL Environment
+#### SchedulingEnvironment Class Specification
 
-```python
-class SchedulingEnvironment:
-    def __init__(self, cluster_state: ClusterState):
-        self.cluster = cluster_state
-        
-    def reset(self) -> State:
-        self.cluster.reset()
-        return self.get_state()
-        
-    def step(self, action: SchedulingAction) -> Tuple[State, float, bool]:
-        self.apply_action(action)
-        new_state = self.get_state()
-        reward = self.calculate_reward(action)
-        done = len(self.pending_pods) == 0
-        return new_state, reward, done
-```
+| Method | Input | Output | Process |
+|--------|-------|--------|---------|
+| __init__ | cluster_state: ClusterState | None | Initialize with cluster state reference |
+| reset | None | State | Reset cluster and return initial state |
+| step | action: SchedulingAction | Tuple[State, float, bool] | Apply action, calculate reward, return new state, reward, done flag |
 
-#### RL Agent (PPO)
+#### PPOSchedulerAgent Class Specification
 
-```python
-class PPOSchedulerAgent:
-    def __init__(self, objectives: SchedulingObjectives):
-        self.policy_network = PolicyNetwork()
-        self.value_network = ValueNetwork()
-        
-    def select_action(self, state: State) -> SchedulingAction:
-        node_scores = self.policy_network(state)
-        feasible_nodes = self.filter_feasible_nodes(state)
-        selected_node = self.sample_node(node_scores, feasible_nodes)
-        return SchedulingAction(pod_id=state.current_pod.id, node_id=selected_node)
-        
-    def update(self, trajectories: List[Trajectory]):
-        for epoch in range(self.update_epochs):
-            advantages = self.calculate_advantages(trajectory)
-            self.update_policy(trajectory, advantages)
-            self.update_value(trajectory)
-```
+| Method | Input | Output | Process |
+|--------|-------|--------|---------|
+| __init__ | objectives: SchedulingObjectives | None | Initialize policy and value networks |
+| select_action | state: State | SchedulingAction | Score nodes via policy network, filter feasible nodes, sample and select node |
+| update | trajectories: List[Trajectory] | None | Calculate advantages, update policy and value networks for configured epochs |
 
 ### Node Scorer
 
-```python
-class NodeScorer:
-    def score_nodes(self, 
-                    pod: PodSpec,
-                    nodes: List[NodeState],
-                    policy: SchedulingPolicy) -> Dict[str, float]:
-        scores = {}
-        for node in nodes:
-            if self.is_feasible(pod, node):
-                score = self.calculate_score(pod, node, policy)
-                scores[node.id] = score
-        return scores
-        
-    def calculate_score(self, pod, node, policy) -> float:
-        score = 0.0
-        score += self.resource_fit_score(pod, node) * policy.resource_weight
-        score += self.affinity_score(pod, node) * policy.affinity_weight
-        score += self.anti_affinity_score(pod, node) * policy.anti_affinity_weight
-        return score
-```
+#### NodeScorer.score_nodes Function Specification
+
+| Aspect | Description |
+|--------|-------------|
+| **Input** | pod: PodSpec, nodes: List[NodeState], policy: SchedulingPolicy |
+| **Output** | Dict[str, float] - Node ID to score mapping |
+| **Process** | |
+| Step 1 | For each node, check if pod placement is feasible |
+| Step 2 | For feasible nodes, calculate score based on policy weights |
+| Step 3 | Return dictionary of node IDs to scores |
+
+#### Score Calculation Components
+
+| Component | Weight Source | Description |
+|-----------|---------------|-------------|
+| resource_fit_score | policy.resource_weight | Score based on resource fit |
+| affinity_score | policy.affinity_weight | Score based on affinity rules |
+| anti_affinity_score | policy.anti_affinity_weight | Score based on anti-affinity rules |
 
 ### Scheduler Integration
 
-```python
-class KubeMindSchedulerPlugin:
-    def PreFilter(self, state: CycleState, pod: Pod) -> bool:
-        return self.should_schedule_with_kubemind(pod)
-        
-    def Filter(self, state: CycleState, pod: Pod, node: NodeInfo) -> bool:
-        return self.node_scorer.is_feasible(pod, node)
-        
-    def Score(self, state: CycleState, pod: Pod, node: NodeInfo) -> int:
-        score = self.get_score(pod, node)
-        return int(score * 100)
-        
-    def NormalizeScore(self, state: CycleState, pod: Pod, scores: List[Score]) -> List[Score]:
-        return self.normalize_scores(scores)
-        
-    def PostBind(self, state: CycleState, pod: Pod, node: NodeInfo):
-        self.record_binding(pod, node)
-```
+#### KubeMindSchedulerPlugin Interface Specification
+
+| Method | Input | Output | Description |
+|--------|-------|--------|-------------|
+| PreFilter | state: CycleState, pod: Pod | bool | Determine if pod should be scheduled with KubeMind |
+| Filter | state: CycleState, pod: Pod, node: NodeInfo | bool | Check if node is feasible for pod |
+| Score | state: CycleState, pod: Pod, node: NodeInfo | int | Score node suitability (0-100) |
+| NormalizeScore | state: CycleState, pod: Pod, scores: List[Score] | List[Score] | Normalize scores across all nodes |
+| PostBind | state: CycleState, pod: Pod, node: NodeInfo | None | Record binding for learning |
 
 ### Workload Profiling
 
-```python
-class WorkloadProfiler:
-    def profile_workload(self, pod: PodSpec) -> WorkloadProfile:
-        resource_profile = self.analyze_resources(pod)
-        constraint_profile = self.analyze_constraints(pod)
-        affinity_profile = self.analyze_affinity(pod)
-        workload_type = self.classify_workload(pod)
-        return WorkloadProfile(
-            resources=resource_profile,
-            constraints=constraint_profile,
-            workload_type=workload_type
-        )
-```
+#### WorkloadProfiler.profile_workload Function Specification
+
+| Aspect | Description |
+|--------|-------------|
+| **Input** | pod: PodSpec |
+| **Output** | WorkloadProfile |
+| **Process** | |
+| Step 1 | Analyze resource requirements |
+| Step 2 | Analyze scheduling constraints |
+| Step 3 | Analyze affinity requirements |
+| Step 4 | Classify workload type |
+| Result | Return profile with resources, constraints, and workload_type |
 
 ### Performance Targets
 
-```yaml
-performance:
-  scheduling_decision: < 100ms
-  node_scoring: < 50ms
-  
-  quality:
-    utilization_improvement: > 20%
-    scheduling_efficiency: > 90%
-    
-  rl_training:
-    episodes: 10000
-    convergence: < 1000 episodes
-```
+| Metric | Target |
+|--------|--------|
+| scheduling_decision | < 100ms |
+| node_scoring | < 50ms |
+
+#### Quality Targets
+
+| Metric | Target |
+|--------|--------|
+| utilization_improvement | > 20% |
+| scheduling_efficiency | > 90% |
+
+#### RL Training Configuration
+
+| Parameter | Value |
+|-----------|-------|
+| episodes | 10000 |
+| convergence | < 1000 episodes |
 
 ## References
 
@@ -192,3 +140,4 @@ performance:
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
 | 0.1 | 2026-04-21 | KubeMind Team | Initial version |
+| 1.1.0 | 2026-04-26 | KubeMind Team | Convert code to specification design |

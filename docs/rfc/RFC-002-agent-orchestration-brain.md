@@ -1,309 +1,347 @@
-# RFC-002: Agent Orchestration Brain Layer
+# RFC-002: Autonomous Governance Brain Layer
 
 ## Abstract
 
-This document defines the design of the Agent Orchestration Brain Layer (Layer 2) of KubeMind, which coordinates multiple AI Agents to perform intelligent decision-making and autonomous governance of Kubernetes clusters.
+This document defines the design of the Autonomous Governance Brain Layer (Layer 2) of KubeMind, which performs continuous intent-driven governance through comparison, drift detection, and autonomous action orchestration.
 
 ## Detailed Design
 
 ### Architecture Overview
 
 ```
-┌────────────────────────────────────────────────────────────┐
-│           Agent Orchestration Brain Layer                    │
-├────────────────────────────────────────────────────────────┤
-│  ┌─────────────────────────────────────────────────────┐  │
-│  │              Agent Coordinator                        │  │
-│  │  ┌──────────────┐  ┌──────────────┐                │  │
-│  │  │ Agent        │  │ Task         │                │  │
-│  │  │ Registry     │  │ Dispatcher   │                │  │
-│  │  └──────────────┘  └──────────────┘                │  │
-│  │  ┌──────────────┐  ┌──────────────┐                │  │
-│  │  │ Conflict     │  │ Global       │                │  │
-│  │  │ Resolver     │  │ Optimizer    │                │  │
-│  │  └──────────────┘  └──────────────┘                │  │
-│  └─────────────────────────────────────────────────────┘  │
-│                           │                                │
-│                           ↓                                │
-│  ┌─────────────────────────────────────────────────────┐  │
-│  │              Specialized Agents                       │  │
-│  │  ┌────────────┐ ┌────────────┐ ┌────────────┐       │  │
-│  │  │Cluster     │ │Scheduler   │ │Resource    │       │  │
-│  │  │Planner     │ │Governor    │ │Governor    │       │  │
-│  │  │Agent       │ │Agent       │ │Agent       │       │  │
-│  │  └────────────┘ └────────────┘ └────────────┘       │  │
-│  │  ┌────────────┐ ┌────────────┐ ┌────────────┐       │  │
-│  │  │Network     │ │Storage     │ │Security    │       │  │
-│  │  │Governor    │ │Governor    │ │Governor    │       │  │
-│  │  │Agent       │ │Agent       │ │Agent       │       │  │
-│  │  └────────────┘ └────────────┘ └────────────┘       │  │
-│  │  ┌────────────┐ ┌────────────┐                     │  │
-│  │  │Fault       │ │Multi       │                     │  │
-│  │  │Healer      │ │Cluster     │                     │  │
-│  │  │Agent       │ │Agent       │                     │  │
-│  │  └────────────┘ └────────────┘                     │  │
-│  └─────────────────────────────────────────────────────┘  │
-│                           │                                │
-│                           ↓                                │
-│  ┌─────────────────────────────────────────────────────┐  │
-│  │              Agent Communication Bus                  │  │
-│  │  ┌──────────────┐  ┌──────────────┐                │  │
-│  │  │ Message      │  │ Event        │                │  │
-│  │  │ Queue        │  │ Bus          │                │  │
-│  │  └──────────────┘  └──────────────┘                │  │
-│  └─────────────────────────────────────────────────────┘  │
-└────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│           Autonomous Governance Brain Layer                   │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │          Intent Governance Engine                     │   │
+│  │  ┌──────────────┐  ┌──────────────┐                │   │
+│  │  │ Intent       │  │ Drift        │                │   │
+│  │  │ Comparator   │  │ Detector     │                │   │
+│  │  └──────────────┘  └──────────────┘                │   │
+│  │  ┌──────────────┐  ┌──────────────┐                │   │
+│  │  │ Action       │  │ Achievement  │                │   │
+│  │  │ Orchestrator │  │ Tracker      │                │   │
+│  │  └──────────────┘  └──────────────┘                │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                           │                                 │
+│                           ↓                                 │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │          Specialized Governor Agents                  │   │
+│  │  ┌────────────┐ ┌────────────┐ ┌────────────┐       │   │
+│  │  │Intent      │ │Self-Healing│ │Auto-Tuning │       │   │
+│  │  │Deployer    │ │Agent       │ │Agent       │       │   │
+│  │  │Agent       │ │            │ │            │       │   │
+│  │  └────────────┘ └────────────┘ └────────────┘       │   │
+│  │  ┌────────────┐ ┌────────────┐ ┌────────────┐       │   │
+│  │  │Resource    │ │Security    │ │Compliance  │       │   │
+│  │  │Governor    │ │Governor    │ │Governor    │       │   │
+│  │  │Agent       │ │Agent       │ │Agent       │       │   │
+│  │  └────────────┘ └────────────┘ └────────────┘       │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                           │                                 │
+│                           ↓                                 │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │          Autonomous Action Bus                        │   │
+│  │  ┌──────────────┐  ┌──────────────┐                │   │
+│  │  │ Action       │  │ Feedback     │                │   │
+│  │  │ Queue        │  │ Loop         │                │   │
+│  │  └──────────────┘  └──────────────┘                │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### Agent Coordinator
+---
 
-#### Agent Registry
+### Autonomous Governance Loop
 
-```python
-@dataclass
-class AgentInfo:
-    agent_id: str
-    agent_type: str
-    capabilities: List[str]
-    priority: int
-    status: AgentStatus
-    endpoint: str
-    last_heartbeat: datetime
-    
-class AgentRegistry:
-    def register(self, agent: AgentInfo) -> bool
-    def discover(self, capability: str) -> List[AgentInfo]
-```
+The governance loop runs continuously to maintain intent state with minimal human intervention.
 
-#### Task Dispatcher
+#### Loop Cycle Duration
 
-```python
-@dataclass
-class Task:
-    task_id: str
-    task_type: str
-    priority: int
-    context: Dict[str, Any]
-    required_capabilities: List[str]
-    constraints: Dict[str, Any]
-    
-class TaskDispatcher:
-    def dispatch(self, task: Task) -> DispatchResult
-```
+| Phase | Duration | Frequency | Description |
+|-------|----------|-----------|-------------|
+| Observe | 2s | Every 10s | Collect system state and metrics |
+| Compare | 1s | Every 10s | Compare current state with intent targets |
+| Detect | 3s | Every 10s | Analyze drift trends and predict future drift |
+| Analyze | 10s | Event-driven | Query knowledge and generate solutions |
+| Decide | 5s | Event-driven | Select solution and validate safety |
+| Execute | Variable | Event-driven | Execute action sequence |
+| Verify | Post-execution | After execute | Measure intent improvement |
+| Learn | Post-execution | After verify | Record outcome and update knowledge |
 
-#### Conflict Resolver
+#### Phase Functions
 
-```yaml
-conflict_types:
-  resource_conflict:
-    description: "Multiple agents want same resources"
-  policy_conflict:
-    description: "Agent decisions violate each other's policies"
-  objective_conflict:
-    description: "Decisions optimize different objectives"
-    
-resolution_strategies:
-  priority_based:
-    description: "Higher priority agent wins"
-    rules:
-      - security > performance
-      - availability > cost
-  compromise:
-    description: "Find middle ground"
-  escalation:
-    description: "Escalate to human if cannot resolve"
-```
+| Phase | Input | Process | Output |
+|-------|-------|---------|--------|
+| **1. Observe** | Intent ID | Collect cluster state, behavior metrics, achievement metrics | Current state snapshot |
+| **2. Compare** | Intent + Current state | Compare specification, behavior, constraint, deployment | Intent gap with deviation scores |
+| **3. Detect** | Comparison history + Current comparison | Analyze trends, detect drift, predict future | Drift report with severity |
+| **4. Analyze** | Drift report + Intent | Query knowledge, analyze root cause, generate solutions | Root cause + Ranked solutions |
+| **5. Decide** | Solutions + Constraints | Select best solution, validate safety, check approval | Action plan |
+| **6. Execute** | Action plan | Execute sequence, monitor progress, handle errors | Execution result |
+| **7. Verify** | Execution result + Intent | Measure improvement, verify no negative impact | Verification result |
+| **8. Learn** | Execution + Verification | Record outcome, update knowledge metrics, feedback | Learning result |
 
-#### Global Optimizer
+---
 
-```python
-class GlobalOptimizer:
-    def optimize(self, 
-                 agent_decisions: List[AgentDecision],
-                 global_objectives: GlobalObjectives) -> OptimizedPlan:
-        # Calculate utilities for each action
-        utilities = self.calculate_utilities(actions, global_objectives)
-        # Optimize action sequence
-        optimized_sequence = self.optimize_sequence(dependency_graph, utilities)
-        return plan
-```
+### Intent Comparator
 
-### Specialized Agents
+#### Function
 
-#### Agent Types and Capabilities
+Compare current system state with intent targets to identify gaps and calculate achievement scores.
 
-```yaml
-agents:
-  cluster_planner:
-    capabilities:
-      - cluster_architecture_design
-      - node_selection
-      - capacity_planning
-      - upgrade_planning
-    priority: 8
-    
-  scheduler_governor:
-    capabilities:
-      - scheduling_optimization
-      - node_selection
-      - pod_placement
-      - workload_distribution
-    priority: 7
-    
-  resource_governor:
-    capabilities:
-      - resource_allocation
-      - quota_management
-      - capacity_prediction
-      - cost_optimization
-    priority: 7
-    
-  network_governor:
-    capabilities:
-      - network_policy_management
-      - cni_configuration
-      - service_mesh_management
-    priority: 6
-    
-  storage_governor:
-    capabilities:
-      - storage_class_management
-      - pv_allocation
-      - backup_management
-    priority: 6
-    
-  security_governor:
-    capabilities:
-      - rbac_management
-      - security_policy
-      - vulnerability_scanning
-      - compliance_audit
-    priority: 9
-    
-  fault_healer:
-    capabilities:
-      - fault_prediction
-      - auto_healing
-      - incident_management
-    priority: 8
-    
-  multi_cluster:
-    capabilities:
-      - cluster_federation
-      - workload_migration
-      - disaster_recovery
-    priority: 7
-```
+#### Input/Output Specification
 
-#### Common Agent Structure
+| Input | Type | Description |
+|-------|------|-------------|
+| intent | SystemIntentDeclaration | The intent to compare against |
+| current_state | ClusterState | Current cluster state snapshot |
+| behavior_metrics | BehaviorMetrics | Current behavior metric values |
 
-```python
-@dataclass
-class AgentBase:
-    agent_id: str
-    agent_type: str
-    capabilities: List[str]
-    llm_config: LLMConfig
-    knowledge_base: KnowledgeBaseClient
-    decision_history: DecisionHistoryClient
-    executor: ExecutionClient
-    state: AgentState
-    
-    def process_task(self, task: Task) -> AgentDecision:
-        context = self.gather_context(task)
-        history = self.query_history(task)
-        reasoning = self.reason(task, context, history)
-        decision = self.generate_decision(reasoning)
-        return decision
-```
+| Output | Type | Description |
+|--------|------|-------------|
+| intent_id | string | Intent being compared |
+| timestamp | datetime | Comparison timestamp |
+| specification_gap | list[IntentGap] | Gaps in specification intent |
+| behavior_gap | list[IntentGap] | Gaps in behavior intent |
+| constraint_gap | list[IntentGap] | Gaps in constraint intent |
+| deployment_gap | list[IntentGap] | Gaps in deployment intent |
+| overall_deviation | float (0-100) | Overall deviation percentage |
+| achievement_score | float (0-100) | Overall achievement score |
+| requires_action | boolean | Whether action is needed |
+| action_priority | enum | Priority: none, low, medium, high, critical |
 
-### Agent Communication
+#### Intent Gap Structure
 
-```yaml
-message_bus:
-  type: kafka
-  topics:
-    - agent_decisions
-    - agent_requests
-    - agent_events
-    - cluster_events
-  patterns:
-    - pub_sub
-    - request_reply
-    - saga
-```
+| Field | Type | Description |
+|-------|------|-------------|
+| category | string | Intent category |
+| metric | string | Specific metric name |
+| target | any | Target value from intent |
+| current | any | Current actual value |
+| deviation_percent | float | Deviation percentage |
+| gap_direction | enum | Direction: above, below, missing |
+| severity | enum | Severity: none, minor, major, critical |
+| remediation | string | Suggested remediation |
 
-### Agent Decision Publication
+#### Comparison Logic
 
-```python
-@dataclass
-class AgentDecision:
-    decision_id: str
-    agent_id: str
-    timestamp: datetime
-    action_type: str
-    action_params: Dict[str, Any]
-    reasoning: str
-    confidence: float
-    validation_result: ValidationResult
-    affected_resources: List[str]
-    requires_approval: bool
-    status: DecisionStatus
-```
+| Intent Category | Comparison Method | Gap Calculation |
+|-----------------|-------------------|-----------------|
+| Specification | State match check | (target - actual) / target * 100 |
+| Behavior | Metric threshold check | (target - actual) / target * 100 |
+| Constraint | Threshold/limit check | violation detection |
+| Deployment | Configuration match | boolean match |
 
-### Multi-Agent Workflows
+---
 
-```yaml
-workflow:
-  name: cluster_upgrade
-  steps:
-    - id: step_1
-      agent: cluster_planner
-      action: analyze_upgrade_impact
-      timeout: 5m
-      
-    - id: step_2
-      agent: security_governor
-      action: security_pre_check
-      depends_on: [step_1]
-      
-    - id: step_3
-      agent: resource_governor
-      action: capacity_preparation
-      depends_on: [step_1]
-      
-    - id: step_4
-      agent: fault_healer
-      action: enable_maintenance_mode
-      depends_on: [step_2, step_3]
-      
-    - id: step_5
-      agent: cluster_planner
-      action: execute_upgrade
-      requires_approval: true
-      depends_on: [step_4]
-```
+### Drift Detector
 
-### Performance Considerations
+#### Function
 
-```yaml
-performance_targets:
-  agent_decision_time:
-    simple_decision: < 5s
-    complex_decision: < 30s
-    
-  throughput:
-    decisions_per_minute: > 100
-    concurrent_tasks: > 20
-```
+Detect intent drift over time and predict future drift patterns.
+
+#### Input/Output Specification
+
+| Input | Type | Description |
+|-------|------|-------------|
+| intent_id | string | Intent to monitor |
+| comparison_history | list[IntentComparisonResult] | Historical comparison results |
+| current_comparison | IntentComparisonResult | Current comparison result |
+
+| Output | Type | Description |
+|--------|------|-------------|
+| intent_id | string | Intent being monitored |
+| timestamp | datetime | Detection timestamp |
+| drift_type | enum | Type: specification_drift, behavior_drift, constraint_drift, deployment_drift, compound_drift |
+| drift_severity | enum | Severity: none, minor, moderate, major, critical |
+| affected_metrics | list[string] | Metrics showing drift |
+| drift_trends | DriftTrends | Trend analysis |
+| predicted_drift | PredictedDrift | Predicted future drift |
+| recommended_actions | list[DriftAction] | Recommended actions |
+| requires_immediate_action | boolean | Whether immediate action needed |
+
+#### Drift Trends Structure
+
+| Field | Type | Description |
+|-------|------|-------------|
+| deviation_trend | enum | Trend: increasing, stable, decreasing |
+| trend_rate_percent_per_hour | float | Rate of drift change |
+| confidence | float (0-1) | Trend confidence level |
+
+#### Predicted Drift Structure
+
+| Field | Type | Description |
+|-------|------|-------------|
+| predicted_deviation_1h | float | Predicted deviation in 1 hour |
+| predicted_deviation_6h | float | Predicted deviation in 6 hours |
+| predicted_deviation_24h | float | Predicted deviation in 24 hours |
+| prediction_confidence | float (0-1) | Prediction confidence level |
+
+#### Drift Severity Classification
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| None | Deviation < 5% | Monitor only |
+| Minor | Deviation 5-10% | Log and track |
+| Moderate | Deviation 10-20% | Plan remediation |
+| Major | Deviation 20-40% | Immediate action planning |
+| Critical | Deviation > 40% | Emergency response |
+
+---
+
+### Action Orchestrator
+
+#### Function
+
+Orchestrate autonomous actions to resolve drift and maintain intent state.
+
+#### Input/Output Specification
+
+| Input | Type | Description |
+|-------|------|-------------|
+| intent | SystemIntentDeclaration | Target intent |
+| drift_report | DriftReport | Drift analysis result |
+| solutions | list[Solution] | Generated solutions |
+| knowledge | RetrievedKnowledge | Applicable knowledge |
+
+| Output | Type | Description |
+|--------|------|-------------|
+| plan_id | string | Plan identifier |
+| intent_id | string | Target intent |
+| actions | list[AutonomousAction] | Action sequence |
+| safety_validation | SafetyValidation | Safety check result |
+| requires_approval | boolean | Whether approval needed |
+| approval_reason | string | Reason for approval requirement |
+| estimated_duration_seconds | integer | Estimated execution time |
+| expected_achievement_improvement | float | Expected improvement |
+| rollback_plan | RollbackPlan | Rollback strategy |
+
+#### Autonomous Action Structure
+
+| Field | Type | Description |
+|-------|------|-------------|
+| action_id | string | Action identifier |
+| action_type | enum | Type: scale, heal, optimize, configure, migrate |
+| target_resource | string | Target resource name |
+| operation | string | Operation to perform |
+| parameters | dict | Action parameters |
+| priority | integer (1-10) | Action priority |
+| pre_conditions | list[string] | Preconditions to check |
+| post_conditions | list[string] | Postconditions to verify |
+| timeout_seconds | integer | Action timeout |
+| retry_count | integer (0-5) | Retry attempts |
+| auto_executable | boolean | Whether auto execution allowed |
+
+#### Safety Validation Structure
+
+| Field | Type | Description |
+|-------|------|-------------|
+| valid | boolean | Whether action plan is valid |
+| has_concerns | boolean | Whether safety concerns exist |
+| concerns | list[SafetyConcern] | Safety concerns list |
+| risk_level | enum | Risk: low, medium, high, critical |
+| mitigations | list[string] | Mitigation strategies |
+
+---
+
+### Specialized Governor Agents
+
+#### Agent Capabilities Summary
+
+| Agent | Capabilities | Priority | Triggers |
+|-------|--------------|----------|----------|
+| **Intent Deployer Agent** | Deploy from blueprint, apply architecture/behavior/policy blueprints | 9 | Intent created, intent modified |
+| **Self-Healing Agent** | Fault detection, auto healing, intent state recovery | 8 | Intent drift detected, component failure, behavior deviation |
+| **Auto-Tuning Agent** | Behavior optimization, parameter tuning, scale adjustment | 7 | Behavior deviation, performance degradation, predicted drift |
+| **Resource Governor Agent** | Resource allocation, quota management, capacity prediction | 7 | Resource constraint violation, capacity forecast, cost deviation |
+| **Security Governor Agent** | Security policy enforcement, RBAC management, vulnerability handling | 9 | Security constraint violation, vulnerability detected, compliance deviation |
+| **Compliance Governor Agent** | Compliance validation, policy enforcement, audit report generation | 8 | Compliance framework change, compliance violation detected, scheduled audit |
+
+#### Intent Deployer Agent
+
+| Action | Trigger | Parameters | Verification |
+|--------|---------|------------|--------------|
+| deploy_infrastructure | Intent created | Blueprint architecture | VPC/Network ready |
+| deploy_control_plane | Infrastructure ready | Control plane blueprint | Control plane healthy |
+| deploy_worker_nodes | Control plane ready | Worker blueprint | Nodes ready |
+| apply_policies | Components deployed | Policy blueprint | Policies enforced |
+| configure_behaviors | Policies applied | Behavior blueprint | Behaviors active |
+
+#### Self-Healing Agent
+
+| Healing Strategy | Trigger Condition | Actions | Outcome |
+|------------------|-------------------|---------|---------|
+| Immediate healing | Severity = critical | Immediate action execution | Intent state restored |
+| Planned healing | Severity = major | Schedule healing action | Intent state restored |
+| Predictive healing | Predicted failure probability > 70% | Proactive action | Failure prevented |
+
+| Healing Action | Target | Condition | Result |
+|----------------|--------|-----------|--------|
+| restart_pod | Pod | OOMKilled, crashloop | Pod running |
+| reschedule_pod | Pod | Node failure, resource constraint | Pod scheduled |
+| scale_replicas | Deployment | Resource exhaustion | Replicas adjusted |
+| adjust_resources | Pod | Resource limit hit | Limits adjusted |
+| replace_node | Node | Node failure | Node replaced |
+
+#### Auto-Tuning Agent
+
+| Tuning Strategy | Trigger Condition | Action | Outcome |
+|------------------|-------------------|--------|---------|
+| Reactive tuning | Deviation > threshold | Immediate parameter adjustment | Intent target met |
+| Proactive tuning | Predicted deviation > threshold | Preemptive adjustment | Drift prevented |
+| Learning tuning | Pattern detected | Apply learned tuning | Optimization achieved |
+
+| Tuning Action | Target | Parameter | Effect |
+|---------------|--------|-----------|--------|
+| adjust_resource_limits | Pod | CPU/memory limits | Resource optimization |
+| tune_scaling_parameters | HPA | Thresholds/cooldowns | Scaling optimization |
+| optimize_placement | Pod | Node selection | Performance optimization |
+| adjust_network_config | Network | Timeout/buffer sizes | Network optimization |
+
+---
+
+### Approval Requirements
+
+#### Approval Categories
+
+| Category | Actions | Approval Requirement |
+|----------|---------|---------------------|
+| **Always requires approval** | Cluster destruction, node drain, security policy changes, compliance framework changes, multi-cluster migration | Human approval required |
+| **Conditional approval** | Actions with cost impact > $1000, availability impact > 1%, action count > 5 | Human approval required |
+| **Auto-approved** | Scale out (within bounds), pod restart, configuration optimization, minor parameter tuning | Automatic execution |
+
+---
+
+### Performance Targets
+
+| Metric | Target | Description |
+|--------|--------|-------------|
+| Governance cycle total | < 10s | Full observe-to-decide cycle |
+| Observe phase | < 2s | State collection |
+| Compare phase | < 1s | Intent comparison |
+| Detect phase | < 3s | Drift detection |
+| Analyze phase | < 10s | Solution generation |
+| Decide phase | < 5s | Action planning |
+| Simple action execution | < 30s | Single action |
+| Complex action execution | < 5min | Multi-step action |
+| Multi-step action execution | < 30min | Full deployment |
+| Intent achievement rate | > 95% | Targets met |
+| Drift resolution rate | > 95% | Drift auto resolved |
+| Auto resolution rate | > 95% | Issues auto fixed |
+| Human intervention rate | < 5/month | Minimal human needed |
+
+---
 
 ## References
 
-- [LangChain Agent Framework](https://python.langchain.com/docs/)
-- [Multi-Agent Systems](https://arxiv.org/)
+- [LangGraph Multi-Agent](https://langchain-ai.github.io/langgraph/)
+- [Kubernetes Controller Runtime](https://book.kubebuilder.io/)
 
 ## Change History
 
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
+| 2.1.0 | 2026-04-26 | KubeMind Team | Convert code to specification design |
+| 2.0.0 | 2026-04-26 | KubeMind Team | Intent-driven autonomous governance redesign |
 | 0.1 | 2026-04-21 | KubeMind Team | Initial version |

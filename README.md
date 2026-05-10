@@ -278,6 +278,7 @@ make run
 | [RFC-007](./docs/rfc/RFC-007-universal-intent-translator.md) | Intent Translator engine |
 | [RFC Index](./docs/rfc/README.md) | All RFC documents index |
 | [ROADMAP.md](./ROADMAP.md) | Development roadmap |
+| [Insight](./Insight/operations-analysis/) | Operations patterns analysis & core value insight |
 
 ---
 

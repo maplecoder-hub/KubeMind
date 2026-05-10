@@ -36,171 +36,131 @@ This document describes the design of the Resource Governor Agent, which handles
 
 ### Capabilities
 
-```yaml
-capabilities:
-  resource_allocation:
-    inputs:
-      - resource_requests
-      - cluster_capacity
-    outputs:
-      - allocation_decisions
-      
-  quota_management:
-    inputs:
-      - usage_patterns
-      - namespace_priorities
-    outputs:
-      - quota_recommendations
-      
-  capacity_planning:
-    inputs:
-      - historical_usage
-      - growth_predictions
-    outputs:
-      - capacity_plan
-      
-  resource_optimization:
-    inputs:
-      - current_allocation
-      - usage_data
-    outputs:
-      - optimization_recommendations
-```
+| Capability | Inputs | Outputs |
+|------------|--------|---------|
+| resource_allocation | resource_requests, cluster_capacity | allocation_decisions |
+| quota_management | usage_patterns, namespace_priorities | quota_recommendations |
+| capacity_planning | historical_usage, growth_predictions | capacity_plan |
+| resource_optimization | current_allocation, usage_data | optimization_recommendations |
 
 ### Quota Manager
 
-```python
-class QuotaManager:
-    def manage_quotas(self, 
-                      cluster_state: ClusterState,
-                      policy: QuotaPolicy) -> QuotaDecisions:
-        usage = self.analyze_usage(cluster_state)
-        effectiveness = self.check_effectiveness(usage)
-        adjustments = self.generate_adjustments(usage, policy)
-        validated = self.validate_adjustments(adjustments, cluster_state)
-        return QuotaDecisions(recommended_quotas=validated)
-```
+#### QuotaManager.manage_quotas Function Specification
+
+| Aspect | Description |
+|--------|-------------|
+| **Input** | cluster_state: ClusterState, policy: QuotaPolicy |
+| **Output** | QuotaDecisions |
+| **Process** | |
+| Step 1 | Analyze current usage from cluster state |
+| Step 2 | Check effectiveness of current quotas |
+| Step 3 | Generate adjustment recommendations based on usage and policy |
+| Step 4 | Validate adjustments against cluster state |
+| Result | Return QuotaDecisions with recommended_quotas |
 
 #### Dynamic Quota Strategy
 
-```yaml
-quota_strategy:
-  baseline:
-    method: "Based on namespace priority and historical usage"
-    
-  dynamic_adjustment:
-    triggers:
-      - usage_above_80_percent
-      - usage_below_50_percent
-    adjustment_rules:
-      - if usage > 80% for 1h: increase quota by 20%
-      - if usage < 50% for 24h: decrease quota by 10%
-      - max_adjustment_per_day: 30%
-      
-  constraints:
-    - total_quotas <= cluster_capacity * safety_margin
-    - min_quota: never reduce below minimum threshold
-```
+| Strategy Component | Configuration |
+|--------------------|---------------|
+| **Baseline Method** | Based on namespace priority and historical usage |
+
+| Trigger | Adjustment Rule | Max per Day |
+|---------|-----------------|-------------|
+| usage > 80% for 1h | Increase quota by 20% | 30% |
+| usage < 50% for 24h | Decrease quota by 10% | 30% |
+
+| Constraint | Value |
+|------------|-------|
+| total_quotas | <= cluster_capacity * safety_margin |
+| min_quota | Never reduce below minimum threshold |
 
 ### Capacity Planner
 
-```python
-class CapacityPlanner:
-    def plan_capacity(self, 
-                      historical_data: HistoricalData,
-                      requirements: CapacityRequirements) -> CapacityPlan:
-        model = self.fit_model(historical_data)
-        predictions = model.predict(requirements.horizon)
-        risks = self.assess_risks(predictions, requirements.sla)
-        plan = self.generate_plan(predictions, risks)
-        return CapacityPlan(predictions=predictions, recommendations=plan)
-```
+#### CapacityPlanner.plan_capacity Function Specification
 
-#### Prediction Models
+| Aspect | Description |
+|--------|-------------|
+| **Input** | historical_data: HistoricalData, requirements: CapacityRequirements |
+| **Output** | CapacityPlan |
+| **Process** | |
+| Step 1 | Fit prediction model on historical data |
+| Step 2 | Generate predictions for specified horizon |
+| Step 3 | Assess risks against SLA requirements |
+| Step 4 | Generate plan from predictions and risks |
 
-```yaml
-prediction_models:
-  prophet:
-    type: time_series
-    use_case: "General forecasting with seasonality"
-    
-  lstm:
-    type: neural_network
-    use_case: "Complex patterns, short-term"
-    
-  ensemble:
-    type: combined
-    models: [prophet, lstm, linear]
-    weights: [0.4, 0.4, 0.2]
-```
+#### Prediction Models Configuration
+
+| Model | Type | Use Case |
+|-------|------|----------|
+| prophet | time_series | General forecasting with seasonality |
+| lstm | neural_network | Complex patterns, short-term |
+| ensemble | combined | Weighted combination of models |
+
+| Ensemble Model | Weight |
+|----------------|--------|
+| prophet | 0.4 |
+| lstm | 0.4 |
+| linear | 0.2 |
 
 ### Resource Optimizer
 
-```python
-class ResourceOptimizer:
-    def optimize(self, cluster_state: ClusterState) -> OptimizationReport:
-        allocation = self.analyze_allocation(cluster_state)
-        inefficiencies = self.identify_inefficiencies(allocation)
-        recommendations = self.generate_recommendations(inefficiencies)
-        impact = self.estimate_impact(recommendations)
-        return OptimizationReport(recommendations=recommendations, impact=impact)
-```
+#### ResourceOptimizer.optimize Function Specification
+
+| Aspect | Description |
+|--------|-------------|
+| **Input** | cluster_state: ClusterState |
+| **Output** | OptimizationReport |
+| **Process** | |
+| Step 1 | Analyze current resource allocation |
+| Step 2 | Identify inefficiencies in allocation |
+| Step 3 | Generate optimization recommendations |
+| Step 4 | Estimate impact of recommendations |
 
 #### Inefficiency Types
 
-```yaml
-inefficiency_types:
-  over_provisioned:
-    detection: request > usage * threshold (2.0)
-    action: "Reduce requests/limits"
-    
-  under_provisioned:
-    detection: usage > request * threshold (0.8)
-    action: "Increase requests/limits"
-    
-  idle_resources:
-    detection: usage == 0 for 7 days
-    action: "Consider removing"
-    
-  quota_waste:
-    detection: quota - usage > threshold (0.5)
-    action: "Reduce quota"
-```
+| Type | Detection Rule | Action |
+|------|----------------|--------|
+| over_provisioned | request > usage * 2.0 | Reduce requests/limits |
+| under_provisioned | usage > request * 0.8 | Increase requests/limits |
+| idle_resources | usage == 0 for 7 days | Consider removing |
+| quota_waste | quota - usage > 0.5 | Reduce quota |
 
 ### Cost Analyzer
 
-```python
-class CostAnalyzer:
-    def analyze_costs(self, 
-                      usage_data: UsageData,
-                      pricing: PricingInfo) -> CostReport:
-        current_costs = self.calculate_costs(usage_data, pricing)
-        cost_drivers = self.identify_drivers(current_costs)
-        opportunities = self.find_opportunities(current_costs)
-        recommendations = self.generate_recommendations(opportunities)
-        return CostReport(
-            current_costs=current_costs,
-            recommendations=recommendations,
-            estimated_savings=self.estimate_savings(recommendations)
-        )
-```
+#### CostAnalyzer.analyze_costs Function Specification
+
+| Aspect | Description |
+|--------|-------------|
+| **Input** | usage_data: UsageData, pricing: PricingInfo |
+| **Output** | CostReport |
+| **Process** | |
+| Step 1 | Calculate current costs from usage and pricing |
+| Step 2 | Identify cost drivers |
+| Step 3 | Find cost optimization opportunities |
+| Step 4 | Generate recommendations |
+| Result | Return report with costs, recommendations, and estimated savings |
 
 ### Performance Targets
 
-```yaml
-performance:
-  quota_decision: < 30s
-  capacity_prediction: < 10s
-  optimization_analysis: < 60s
-  
-  accuracy:
-    capacity_prediction_7d: > 90%
-    capacity_prediction_30d: > 80%
-    
-  efficiency:
-    resource_utilization: > 70%
-    cost_savings: > 20%
-```
+| Metric | Target |
+|--------|--------|
+| quota_decision | < 30s |
+| capacity_prediction | < 10s |
+| optimization_analysis | < 60s |
+
+#### Accuracy Targets
+
+| Metric | Target |
+|--------|--------|
+| capacity_prediction_7d | > 90% |
+| capacity_prediction_30d | > 80% |
+
+#### Efficiency Targets
+
+| Metric | Target |
+|--------|--------|
+| resource_utilization | > 70% |
+| cost_savings | > 20% |
 
 ## References
 
@@ -212,3 +172,4 @@ performance:
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
 | 0.1 | 2026-04-21 | KubeMind Team | Initial version |
+| 1.1.0 | 2026-04-26 | KubeMind Team | Convert code to specification design |

@@ -2,7 +2,7 @@
 
 ## Abstract
 
-This document describes the design of the Governance Policy Declaration system in KubeMind, which enables users to define cluster governance policies in a declarative manner.
+This document describes the design of the Governance Policy Declaration system in KubeMind, which enables users to define cluster governance policies in a declarative manner. This system will be replaced by System Intent Declaration (SID) in the intent-driven architecture.
 
 ## Detailed Design
 
@@ -45,219 +45,134 @@ This document describes the design of the Governance Policy Declaration system i
 └────────────────────────────────────────────────────────────┘
 ```
 
-### Policy DSL Design
+---
 
-#### Policy Types
+### Policy Types Specification
 
-```yaml
-policy_types:
-  ClusterGovernancePolicy:
-    description: "Cluster-wide governance policy"
-    scope: cluster
-    
-  NamespaceGovernancePolicy:
-    description: "Namespace-level governance policy"
-    scope: namespace
-    
-  SecurityPolicy:
-    description: "Security and compliance policy"
-    scope: cluster/namespace
-    
-  SchedulingPolicy:
-    description: "Scheduling optimization policy"
-    scope: cluster
-    
-  FaultHandlingPolicy:
-    description: "Fault detection and healing policy"
-    scope: cluster/namespace
-```
+| Policy Type | Description | Scope | Intent Equivalent |
+|-------------|-------------|-------|-------------------|
+| ClusterGovernancePolicy | Cluster-wide governance policy | cluster | Specification Intent + Behavior Intent |
+| NamespaceGovernancePolicy | Namespace-level governance policy | namespace | Specification Intent |
+| SecurityPolicy | Security and compliance policy | cluster/namespace | Constraint Intent (security) |
+| SchedulingPolicy | Scheduling optimization policy | cluster | Behavior Intent (performance) |
+| FaultHandlingPolicy | Fault detection and healing policy | cluster/namespace | Behavior Intent (resilience) |
+
+---
+
+### Policy DSL Specification
 
 #### ClusterGovernancePolicy Spec
 
-```yaml
-apiVersion: kubemind.ai/v1alpha1
-kind: ClusterGovernancePolicy
-metadata:
-  name: production-governance
-  labels:
-    environment: production
-    team: platform
-spec:
-  scheduling:
-    mode: intelligent
-    algorithm: reinforcement-learning
-    objectives:
-      - name: resource-utilization
-        weight: 0.4
-        target: 0.75
-      - name: performance
-        weight: 0.3
-      - name: cost-optimization
-        weight: 0.3
-        
-  resources:
-    autoQuota: true
-    quotaStrategy: dynamic
-    capacityPlanning:
-      enabled: true
-      predictionHorizon: 30d
-      predictionModel: prophet
-      
-  security:
-    rbac:
-      generation: auto
-      principle: least-privilege
-    compliance:
-      frameworks:
-        - cis-kubernetes-benchmark
-        - nist-csf
-        
-  faultHandling:
-    mode: predictive
-    prediction:
-      enabled: true
-      model: lstm
-      horizon: 30m
-    autoHealing:
-      enabled: true
-      strategies:
-        - type: node-drain
-          trigger: predicted-failure
-          threshold: 0.9
-        
-  approval:
-    required:
-      - node-drain
-      - cluster-upgrade
-      - network-policy-change
-    channels:
-      - type: slack
-        channel: "#ops-approval"
-```
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| apiVersion | string | Yes | kubemind.ai/v1alpha1 |
+| kind | string | Yes | ClusterGovernancePolicy |
+| metadata.name | string | Yes | Policy name |
+| metadata.labels | dict | No | Policy labels |
+| spec.scheduling.mode | enum | No | Mode: intelligent, manual |
+| spec.scheduling.algorithm | enum | No | Algorithm: reinforcement-learning, heuristic |
+| spec.scheduling.objectives | list[Objective] | No | Scheduling objectives |
+| spec.resources.autoQuota | boolean | No | Auto quota generation |
+| spec.resources.capacityPlanning.enabled | boolean | No | Enable capacity planning |
+| spec.security.rbac.generation | enum | No | RBAC generation: auto, manual |
+| spec.security.compliance.frameworks | list[enum] | No | Compliance frameworks |
+| spec.faultHandling.mode | enum | No | Mode: predictive, reactive |
+| spec.faultHandling.autoHealing.enabled | boolean | No | Enable auto healing |
+| spec.approval.required | list[string] | No | Required approval actions |
+
+#### Scheduling Objective Specification
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| name | string | Yes | Objective name |
+| weight | float (0-1) | Yes | Objective weight |
+| target | float | No | Objective target value |
+
+---
 
 ### Policy Validation
 
-#### Validation Rules
+#### Validation Rules Specification
 
-```yaml
-validation_rules:
-  structural:
-    - required_fields_check
-    - type_validation
-    - enum_value_check
-    
-  semantic:
-    - weight_sum_equals_one
-    - valid_reference_check
-    - target_value_range
-    
-  constraint:
-    - resource_constraint
-    - node_constraint
-    - network_constraint
-    
-  security:
-    - rbac_least_privilege
-    - no_privileged_containers
-```
+| Validation Type | Rules | Description |
+|-----------------|-------|-------------|
+| **Structural Validation** | required_fields_check, type_validation, enum_value_check | Basic structure validation |
+| **Semantic Validation** | weight_sum_equals_one, valid_reference_check, target_value_range | Semantic correctness |
+| **Constraint Validation** | resource_constraint, node_constraint, network_constraint | Constraint feasibility |
+| **Security Validation** | rbac_least_privilege, no_privileged_containers | Security compliance |
 
-#### Validation Engine
+#### Validation Process
 
-```python
-class PolicyValidator:
-    def validate(self, policy: Policy) -> ValidationResult:
-        result = ValidationResult()
-        
-        result.merge(self.validate_structure(policy))
-        result.merge(self.validate_semantics(policy))
-        
-        cluster_state = self.get_cluster_state()
-        result.merge(self.validate_constraints(policy, cluster_state))
-        result.merge(self.validate_security(policy))
-        result.merge(self.validate_compliance(policy))
-        
-        return result
-```
+| Step | Input | Process | Output |
+|------|-------|---------|--------|
+| 1 | Policy YAML | Structure validation | Structural validation result |
+| 2 | Validated policy | Semantic validation | Semantic validation result |
+| 3 | Validated policy + Cluster state | Constraint validation | Constraint validation result |
+| 4 | Validated policy | Security validation | Security validation result |
+| 5 | Validated policy | Compliance validation | Compliance validation result |
+
+#### Validation Result Specification
+
+| Field | Type | Description |
+|-------|------|-------------|
+| valid | boolean | Overall validation status |
+| errors | list[ValidationError] | Validation errors |
+| warnings | list[ValidationWarning] | Validation warnings |
+
+---
 
 ### Conflict Detection
 
-#### Conflict Types
+#### Conflict Types Specification
 
-```yaml
-conflict_types:
-  scope_conflict:
-    description: "Policies at different scopes have conflicting rules"
-    
-  priority_conflict:
-    description: "Multiple policies with same priority contradict"
-    
-  resource_conflict:
-    description: "Resource allocation conflicts"
-    
-  scheduling_conflict:
-    description: "Scheduling objectives contradict"
-```
+| Conflict Type | Description | Detection Method |
+|---------------|-------------|------------------|
+| Scope Conflict | Policies at different scopes have conflicting rules | Scope hierarchy check |
+| Priority Conflict | Multiple policies with same priority contradict | Priority comparison |
+| Resource Conflict | Resource allocation conflicts | Resource overlap check |
+| Scheduling Conflict | Scheduling objectives contradict | Objective weight check |
 
-#### Resolution Strategy
+#### Resolution Strategy Specification
 
-```yaml
-resolution_strategy:
-  precedence_order:
-    - explicit_priority
-    - scope_hierarchy
-    - creation_order
-    - user_choice
-    
-  automatic_resolution:
-    enabled: false
-    rules:
-      - security_policy_overrides_performance
-      - compliance_policy_overrides_custom
-```
+| Strategy | Order | Description |
+|----------|-------|-------------|
+| Explicit Priority | 1 | Policy with explicit higher priority wins |
+| Scope Hierarchy | 2 | Cluster policy > Namespace policy |
+| Creation Order | 3 | Earlier created policy wins |
+| User Choice | 4 | User decides resolution |
+
+#### Automatic Resolution Rules
+
+| Rule | Condition | Resolution |
+|------|-----------|------------|
+| Security overrides performance | Security policy vs performance policy | Security policy wins |
+| Compliance overrides custom | Compliance framework vs custom policy | Compliance policy wins |
+
+---
 
 ### Policy Lifecycle Management
 
-#### Version Control
+#### Version Control Specification
 
-```yaml
-version_control:
-  storage: git
-  operations:
-    - create
-    - update
-    - rollback
-    - diff
-    - history
-  versioning:
-    format: semver
-    auto_increment: true
-  retention:
-    max_versions: 50
-    retention_period: 90d
-```
+| Feature | Configuration | Description |
+|---------|---------------|-------------|
+| Storage | Git | Policy version control |
+| Operations | create, update, rollback, diff, history | Available operations |
+| Versioning Format | SemVer | Semantic versioning |
+| Auto Increment | true | Auto increment on update |
+| Max Versions | 50 | Maximum retained versions |
+| Retention Period | 90d | Version retention period |
 
-#### Approval Workflow
+#### Approval Workflow Specification
 
-```yaml
-approval_workflow:
-  triggers:
-    - policy_create
-    - policy_update
-    - high_risk_change
-    
-  steps:
-    - name: submit
-      actor: user
-    - name: validate
-      actor: system
-      auto: true
-    - name: review
-      actor: approver
-      timeout: 24h
-    - name: apply
-      actor: system
-      condition: approved
-```
+| Step | Name | Actor | Timeout | Auto |
+|------|------|-------|---------|------|
+| 1 | submit | user | - | No |
+| 2 | validate | system | - | Yes |
+| 3 | review | approver | 24h | No |
+| 4 | apply | system | - | Yes (if approved) |
+
+---
 
 ## References
 
@@ -268,4 +183,5 @@ approval_workflow:
 
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
+| 1.1.0 | 2026-04-26 | KubeMind Team | Convert code to specification design |
 | 0.1 | 2026-04-21 | KubeMind Team | Initial version |

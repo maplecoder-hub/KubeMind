@@ -21,22 +21,25 @@ This directory contains architecture design and technical specification document
 
 | RFC | Title | Status | Tech Stack |
 |-----|-------|--------|------------|
-| [RFC-000](./RFC-000-kubemind-architecture.md) | KubeMind Overall Architecture | Active | Python + Go |
+| [RFC-000](./RFC-000-kubemind-architecture.md) | KubeMind Intent-Driven Architecture | Active | Python + Go |
 
-### Layer 1: Human-Machine Interface Layer (Python/FastAPI)
+### Intent Definition & Translation (Layer 1-2)
 
 | RFC | Title | Status | Packages |
 |-----|-------|--------|----------|
-| [RFC-001](./RFC-001-human-machine-interface.md) | Human-Machine Interface Overview | Active | FastAPI, React |
+| [RFC-001](./RFC-001-human-machine-interface.md) | Intent Interface Layer | Active | FastAPI, LangChain |
 | [RFC-001-1](./RFC-001-1-natural-language-interface.md) | Natural Language Interface | Active | LangChain |
 | [RFC-001-2](./RFC-001-2-governance-policy-declaration.md) | Governance Policy Declaration | Active | Pydantic |
-| [RFC-001-3](./RFC-001-3-observability-dashboard.md) | Observability Dashboard | Active | FastAPI WebSocket |
+| [RFC-001-3](./RFC-001-3-observability-dashboard.md) | Intent Visualization Dashboard | Active | FastAPI WebSocket |
+| [RFC-005](./RFC-005-system-intent-declaration.md) | System Intent Declaration (SID) Schema | Active | Pydantic |
+| [RFC-006](./RFC-006-knowledge-injection-interface.md) | Knowledge Injection Interface (KII) | Active | Pydantic |
+| [RFC-007](./RFC-007-universal-intent-translator.md) | Universal Intent Translator (UIT) | Active | LangChain |
 
-### Layer 2: Agent Orchestration Brain Layer (Python/LangChain)
+### Layer 2: Autonomous Governance Brain (Python/LangChain)
 
 | RFC | Title | Status | Packages |
 |-----|-------|--------|----------|
-| [RFC-002](./RFC-002-agent-orchestration-brain.md) | Agent Orchestration Brain Overview | Active | LangGraph, LangChain |
+| [RFC-002](./RFC-002-agent-orchestration-brain.md) | Autonomous Governance Brain Overview | Active | LangGraph, LangChain |
 | [RFC-002-1](./RFC-002-1-agent-coordinator.md) | Agent Coordinator | Active | LangGraph |
 | [RFC-002-2](./RFC-002-2-cluster-planner-agent.md) | Cluster Planner Agent | Draft | LangChain |
 | [RFC-002-3](./RFC-002-3-scheduler-governor-agent.md) | Scheduler Governor Agent | Draft | LangChain, stable-baselines3 |
@@ -47,7 +50,7 @@ This directory contains architecture design and technical specification document
 | [RFC-002-8](./RFC-002-8-fault-healer-agent.md) | Fault Healer Agent | Draft | LangChain, torch |
 | [RFC-002-9](./RFC-002-9-multi-cluster-agent.md) | Multi-Cluster Agent | Draft | LangChain |
 
-### Layer 3: K8S Knowledge Base Layer (Python/LlamaIndex)
+### Layer 3: Knowledge Base Layer (Python/LlamaIndex)
 
 | RFC | Title | Status | Packages |
 |-----|-------|--------|----------|
@@ -68,9 +71,12 @@ This directory contains architecture design and technical specification document
 
 ```
 1. TECH-STACK.md → Understand definitive technology choices
-2. RFC-000 → Understand overall architecture
-3. Layer RFCs (001-004) → Understand layer designs
-4. Module RFCs → Understand specific implementations
+2. RFC-000 → Understand intent-driven architecture
+3. RFC-005 → Understand System Intent Declaration schema
+4. RFC-006 → Understand Knowledge Injection interface
+5. RFC-007 → Understand Intent Translation process
+6. Layer RFCs (001-004) → Understand layer designs
+7. Module RFCs → Understand specific implementations
 ```
 
 ---
@@ -104,27 +110,27 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
-class AgentDecision(BaseModel):
-    """RFC-002 AgentDecision model - MUST match TECH-STACK.md"""
-    decision_id: str = Field(..., min_length=1, max_length=64)
-    agent_id: str = Field(..., min_length=1, max_length=64)
-    timestamp: datetime
-    action_type: str
-    action_params: Dict[str, Any]
-    confidence: float = Field(..., ge=0.0, le=1.0)
+class SystemIntentDeclaration(BaseModel):
+    """RFC-005 SID model - MUST match TECH-STACK.md"""
+    intent_id: str = Field(..., min_length=1, max_length=64)
+    natural_language: str = Field(..., min_length=10)
+    specification: SpecificationIntent
+    behavior: BehaviorIntent
+    constraints: Optional[ConstraintIntent] = None
+    deployment: DeploymentIntent
 ```
 
 ### Example Go Struct
 
 ```go
-// AgentDecision - RFC-002 model
+// SystemIntentDeclaration - RFC-005 model
 // MUST match TECH-STACK.md specifications
-type AgentDecision struct {
-    DecisionID    string    `json:"decision_id" validate:"required,min=1,max=64"`
-    AgentID       string    `json:"agent_id" validate:"required,min=1,max=64"`
-    Timestamp     time.Time `json:"timestamp"`
-    ActionType    string    `json:"action_type" validate:"required"`
-    Confidence    float64   `json:"confidence" validate:"min=0,max=1"`
+type SystemIntentDeclaration struct {
+    IntentID        string             `json:"intent_id" validate:"required,min=1,max=64"`
+    NaturalLanguage string             `json:"natural_language" validate:"required,min=10"`
+    Specification   SpecificationIntent `json:"specification"`
+    Behavior        BehaviorIntent      `json:"behavior"`
+    Deployment      DeploymentIntent    `json:"deployment"`
 }
 ```
 
@@ -156,6 +162,7 @@ Before submitting RFC:
 |----------|---------|
 | [TECH-STACK.md](../TECH-STACK.md) | Definitive technology decisions |
 | [ROADMAP.md](../ROADMAP.md) | Development milestones |
+| [VISION.md](../VISION.md) | Intent-driven vision |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Contribution guidelines |
 
 ---
@@ -164,4 +171,5 @@ Before submitting RFC:
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
+| 2.0.0 | 2026-04-26 | KubeMind Team | Intent-driven architecture update, added RFC-005/006/007 |
 | 1.0.0 | 2026-04-22 | KubeMind Team | Added TECH-STACK.md compliance |

@@ -40,185 +40,183 @@ This document describes the design of the Agent Coordinator, which is the centra
 
 ### Agent Registry
 
-```python
-@dataclass
-class AgentRegistration:
-    agent_id: str
-    agent_type: str
-    version: str
-    capabilities: List[AgentCapability]
-    priority: int
-    scope: AgentScope
-    endpoint: str
-    authentication: AuthConfig
-    
-class AgentCapability:
-    name: str
-    description: str
-    input_schema: Dict
-    output_schema: Dict
-```
+#### AgentRegistration Data Model
+
+| Field | Type | Description |
+|-------|------|-------------|
+| agent_id | string | Unique identifier for the agent |
+| agent_type | string | Type classification of the agent |
+| version | string | Version string of the agent |
+| capabilities | List[AgentCapability] | List of capabilities the agent provides |
+| priority | integer | Priority level for task assignment |
+| scope | AgentScope | Scope of agent operations |
+| endpoint | string | Network endpoint for agent communication |
+| authentication | AuthConfig | Authentication configuration |
+
+#### AgentCapability Data Model
+
+| Field | Type | Description |
+|-------|------|-------------|
+| name | string | Name of the capability |
+| description | string | Human-readable description |
+| input_schema | Dict | JSON schema for inputs |
+| output_schema | Dict | JSON schema for outputs |
 
 #### Registration Process
 
-```yaml
-registration_process:
-  steps:
-    - name: validate_request
-      checks:
-        - agent_type valid
-        - capabilities well-defined
-        - endpoint reachable
-    - name: health_check
-      action: ping agent endpoint
-      timeout: 5s
-    - name: register
-      action: add to registry
-    - name: notify
-      action: broadcast registration event
-```
+| Step | Action | Checks/Conditions | Timeout |
+|------|--------|-------------------|---------|
+| 1. validate_request | Validate registration request | agent_type valid, capabilities well-defined, endpoint reachable | N/A |
+| 2. health_check | Ping agent endpoint | Endpoint responds successfully | 5s |
+| 3. register | Add to registry | Registration persisted | N/A |
+| 4. notify | Broadcast registration event | All subscribers notified | N/A |
 
 ### Task Dispatcher
 
-```python
-@dataclass
-class Task:
-    task_id: str
-    task_type: str
-    required_capabilities: List[str]
-    priority: TaskPriority
-    context: TaskContext
-    constraints: TaskConstraints
-    deadline: Optional[datetime]
-    requires_approval: bool
-    
-class TaskDispatcher:
-    def dispatch(self, task: Task) -> DispatchResult:
-        # Identify capable agents
-        capable_agents = self.registry.discover_by_capabilities(task.required_capabilities)
-        # Select best agents
-        selected_agents = self.select_agents(capable_agents, task)
-        # Check conflicts
-        potential_conflicts = self.check_conflicts(selected_agents, task)
-        # Execute plan
-        execution_result = self.execute_plan(resolved_plan)
-        return execution_result
-```
+#### Task Data Model
 
-#### Execution Plan
+| Field | Type | Description |
+|-------|------|-------------|
+| task_id | string | Unique identifier for the task |
+| task_type | string | Type classification of the task |
+| required_capabilities | List[string] | Capabilities required to execute |
+| priority | TaskPriority | Priority level for scheduling |
+| context | TaskContext | Execution context data |
+| constraints | TaskConstraints | Execution constraints |
+| deadline | Optional[datetime] | Optional deadline for completion |
+| requires_approval | boolean | Whether approval is required |
 
-```python
-@dataclass
-class ExecutionPlan:
-    plan_id: str
-    task_id: str
-    steps: List[PlanStep]
-    dependency_graph: Dict[str, List[str]]
-    parallel_groups: List[List[str]]
-    estimated_duration: timedelta
-```
+#### TaskDispatcher.dispatch Function Specification
+
+| Aspect | Description |
+|--------|-------------|
+| **Input** | task: Task - The task to dispatch |
+| **Output** | DispatchResult - Result of dispatch operation |
+| **Process** | |
+| Step 1 | Identify capable agents by matching required capabilities |
+| Step 2 | Select best agents based on task requirements and agent availability |
+| Step 3 | Check for potential conflicts between selected agents |
+| Step 4 | Resolve conflicts if any exist |
+| Step 5 | Execute the resolved plan and return results |
+
+#### ExecutionPlan Data Model
+
+| Field | Type | Description |
+|-------|------|-------------|
+| plan_id | string | Unique identifier for the plan |
+| task_id | string | Associated task identifier |
+| steps | List[PlanStep] | Ordered list of execution steps |
+| dependency_graph | Dict[string, List[string]] | Step dependencies mapping |
+| parallel_groups | List[List[string]] | Groups of steps that can run in parallel |
+| estimated_duration | timedelta | Estimated execution time |
 
 ### Conflict Resolver
 
-```python
-class ConflictDetector:
-    def detect_conflicts(self, decisions: List[AgentDecision]) -> List[Conflict]:
-        conflicts = []
-        conflicts.extend(self.detect_resource_conflicts(decisions))
-        conflicts.extend(self.detect_policy_conflicts(decisions))
-        conflicts.extend(self.detect_objective_conflicts(decisions))
-        return conflicts
-        
-class ConflictResolver:
-    def resolve(self, conflict: Conflict) -> ResolutionPlan:
-        strategy = self.select_strategy(conflict)
-        if strategy == ResolutionStrategy.PRIORITY:
-            return self.priority_resolution(conflict)
-        elif strategy == ResolutionStrategy.COMPROMISE:
-            return self.compromise_resolution(conflict)
-```
+#### ConflictDetector.detect_conflicts Function Specification
+
+| Aspect | Description |
+|--------|-------------|
+| **Input** | decisions: List[AgentDecision] - List of agent decisions |
+| **Output** | List[Conflict] - Detected conflicts |
+| **Process** | Detects resource conflicts, policy conflicts, and objective conflicts from the provided decisions |
+
+#### ConflictResolver.resolve Function Specification
+
+| Aspect | Description |
+|--------|-------------|
+| **Input** | conflict: Conflict - The conflict to resolve |
+| **Output** | ResolutionPlan - Plan for resolving the conflict |
+| **Process** | Selects resolution strategy (PRIORITY or COMPROMISE) and applies the appropriate resolution method |
 
 ### Global Optimizer
 
-```python
-class GlobalOptimizer:
-    def optimize(self, 
-                 decisions: List[AgentDecision],
-                 objectives: GlobalObjectives) -> OptimizedPlan:
-        graph = self.build_decision_graph(decisions)
-        utilities = self.calculate_utilities(decisions, objectives)
-        optimal_path = self.find_optimal_path(graph, utilities)
-        return self.generate_plan(optimal_path)
-```
+#### GlobalOptimizer.optimize Function Specification
+
+| Aspect | Description |
+|--------|-------------|
+| **Input** | decisions: List[AgentDecision], objectives: GlobalObjectives |
+| **Output** | OptimizedPlan |
+| **Process** | |
+| Step 1 | Build decision graph from agent decisions |
+| Step 2 | Calculate utilities based on global objectives |
+| Step 3 | Find optimal path through the decision graph |
+| Step 4 | Generate optimized execution plan |
 
 ### Workflow Orchestrator
 
-```python
-@dataclass
-class Workflow:
-    workflow_id: str
-    workflow_type: str
-    trigger: WorkflowTrigger
-    steps: List[WorkflowStep]
-    error_policy: ErrorPolicy
-    total_timeout: timedelta
-    
-class WorkflowOrchestrator:
-    def execute(self, workflow: Workflow) -> WorkflowResult:
-        state = WorkflowState(workflow.workflow_id)
-        while state.has_pending_steps():
-            executable = state.get_executable_steps()
-            results = self.execute_parallel(executable, workflow)
-            for step, result in results:
-                state.update_step(step.step_id, result)
-        return WorkflowResult.success(state)
-```
+#### Workflow Data Model
+
+| Field | Type | Description |
+|-------|------|-------------|
+| workflow_id | string | Unique identifier for the workflow |
+| workflow_type | string | Type classification of the workflow |
+| trigger | WorkflowTrigger | Event that triggers the workflow |
+| steps | List[WorkflowStep] | Ordered list of workflow steps |
+| error_policy | ErrorPolicy | Policy for handling errors |
+| total_timeout | timedelta | Maximum execution time |
+
+#### WorkflowOrchestrator.execute Function Specification
+
+| Aspect | Description |
+|--------|-------------|
+| **Input** | workflow: Workflow |
+| **Output** | WorkflowResult |
+| **Process** | |
+| Step 1 | Initialize workflow state |
+| Step 2 | While pending steps exist, get executable steps |
+| Step 3 | Execute executable steps in parallel |
+| Step 4 | Update state with step results |
+| Step 5 | Return success result when all steps complete |
 
 ### Health Monitor
 
-```python
-class HealthMonitor:
-    def monitor_agents(self):
-        while True:
-            for agent in self.registry.get_all():
-                health = self.check_health(agent)
-                if health.status == HealthStatus.UNHEALTHY:
-                    self.handle_unhealthy_agent(agent, health)
-            sleep(self.check_interval)
-```
+#### HealthMonitor.monitor_agents Function Specification
+
+| Aspect | Description |
+|--------|-------------|
+| **Input** | None (continuous monitoring loop) |
+| **Output** | None (side effects: agent status updates) |
+| **Process** | |
+| Loop | Continuously iterate through registered agents |
+| Check | For each agent, check health status |
+| Handle | If unhealthy, trigger handling procedure |
+| Interval | Sleep for configured check interval between cycles |
 
 ### Approval Manager
 
-```python
-class ApprovalManager:
-    def request_approval(self, decision: AgentDecision, config: ApprovalConfig) -> ApprovalRequest:
-        request = ApprovalRequest(
-            request_id=generate_id(),
-            decision_id=decision.decision_id,
-            approvers=config.approvers
-        )
-        for approver in config.approvers:
-            self.notify_approver(approver, request)
-        return request
-```
+#### ApprovalManager.request_approval Function Specification
+
+| Aspect | Description |
+|--------|-------------|
+| **Input** | decision: AgentDecision, config: ApprovalConfig |
+| **Output** | ApprovalRequest |
+| **Process** | |
+| Step 1 | Generate unique request ID |
+| Step 2 | Create approval request with decision ID and approvers |
+| Step 3 | Notify each approver in the configuration |
+| Step 4 | Return the created approval request |
 
 ### Performance Considerations
 
-```yaml
-performance:
-  latency:
-    agent_discovery: < 100ms
-    task_dispatch: < 200ms
-    conflict_detection: < 500ms
-    conflict_resolution: < 2s
-    
-  throughput:
-    tasks_per_second: > 50
-    decisions_per_minute: > 100
-```
+#### Latency Requirements
+
+| Operation | Target |
+|-----------|--------|
+| agent_discovery | < 100ms |
+| task_dispatch | < 200ms |
+| conflict_detection | < 500ms |
+| conflict_resolution | < 2s |
+
+#### Throughput Requirements
+
+| Metric | Target |
+|--------|--------|
+| tasks_per_second | > 50 |
+| decisions_per_minute | > 100 |
 
 ## Change History
 
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
 | 0.1 | 2026-04-21 | KubeMind Team | Initial version |
+| 1.1.0 | 2026-04-26 | KubeMind Team | Convert code to specification design |
